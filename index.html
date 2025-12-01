@@ -8,7 +8,7 @@
     
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-        <script>
+    <script>
 document.addEventListener("contextmenu", e => e.preventDefault());
 document.addEventListener("selectstart", e => e.preventDefault());
 document.addEventListener("keydown", e => {
@@ -420,16 +420,15 @@ document.addEventListener("keydown", e => {
         // =========================================================================
         // --- KONFIGURASI FIREBASE & INISIALISASI ---
         // =========================================================================
-        const firebaseConfig = {
-    apiKey: "AIzaSyBN7iZX6CNHMEENgsFoS8VHhguRreE-xRs",
-    authDomain: "kasirku-1d33c.firebaseapp.com",
-    databaseURL: "https://kasirku-1d33c-default-rtdb.firebaseio.com/",
-    projectId: "kasirku-1d33c",
-    storageBucket: "kasirku-1d33c.appspot.com",
-    messagingSenderId: "440756410882",
-    appId: "1:440756410882:web:674a56658a0f5241d0651b",
-    measurementId: "G-D7C4321WB4"
-};
+        const FIREBASE_CONFIG = {
+            apiKey: "AIzaSyDpPEkKbEt6b_v2OWlBfGuaVQpBg2-RWR4",
+            authDomain: "cwu-gen-2.firebaseapp.com",
+            databaseURL: "https://cwu-gen-2-default-rtdb.firebaseio.com",
+            projectId: "cwu-gen-2",
+            storageBucket: "cwu-gen-2.appspot.com",
+            messagingSenderId: "40585612014",
+            appId: "1:40585612014:web:c88141fee3699aca68181ff"
+        };
         firebase.initializeApp(FIREBASE_CONFIG);
         const database = firebase.database();
         
