@@ -420,15 +420,15 @@ document.addEventListener("keydown", e => {
         // =========================================================================
         // --- KONFIGURASI FIREBASE & INISIALISASI ---
         // =========================================================================
-        const FIREBASE_CONFIG = {
-            apiKey: "AIzaSyDpPEkKbEt6b_v2OWlBfGuaVQpBg2-RWR4",
-            authDomain: "cwu-gen-2.firebaseapp.com",
-            databaseURL: "https://cwu-gen-2-default-rtdb.firebaseio.com",
-            projectId: "cwu-gen-2",
-            storageBucket: "cwu-gen-2.appspot.com",
-            messagingSenderId: "40585612014",
-            appId: "1:40585612014:web:c88141fee3699aca68181ff"
-        };
+        const firebaseConfig = {
+  apiKey: "AIzaSyDpPEkKbEt6b_v2OWlBfGuaVQpBg2-RWR4",
+  authDomain: "cwu-gen-2.firebaseapp.com",
+  databaseURL: "https://cwu-gen-2-default-rtdb.firebaseio.com",
+  projectId: "cwu-gen-2",
+  storageBucket: "cwu-gen-2.appspot.com",
+  messagingSenderId: "40585612014",
+  appId: "1:40585612014:web:c88141fee3699aca68181ff"
+};
         firebase.initializeApp(FIREBASE_CONFIG);
         const database = firebase.database();
         
@@ -1287,3 +1287,4 @@ document.addEventListener("keydown", e => {
     </script>
 </body>
 </html>
+
