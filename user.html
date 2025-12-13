@@ -36,7 +36,6 @@ body{
     margin:0;
     background:var(--bg);
     color:var(--text);
-  -webkit-tap-hightlight-color:transparent;
 }
 .container{
     max-width:800px;
@@ -97,15 +96,21 @@ h1{
     border-radius:10px;
 }
 
-.total-lulus-info{
-    font-size:1.05em;
-    margin-bottom:20px;
+.info-box{
+    margin-bottom:18px;
+    padding-bottom:12px;
     border-bottom:1px solid var(--muted);
-    padding-bottom:10px;
+    font-size:1.05em;
 }
-.total-lulus-info strong{
+.info-box strong{
     font-size:1.4em;
     color:var(--success);
+}
+
+.disclaimer{
+    font-size:.85em;
+    color:var(--muted);
+    margin-top:5px;
 }
 
 .result-item{
@@ -150,16 +155,23 @@ h1{
 
 <div class="user-section">
 
-    <div class="total-lulus-info">
-        Total Peserta <strong>LULUS</strong> (berdasarkan data Admin):
+    <!-- TOTAL LULUS (DISCLAIMER ADMIN) -->
+    <div class="info-box">
+        Total Peserta <strong>LULUS</strong> (data Admin):
         <strong id="lulusCount">0</strong> orang
-        <div style="font-size:.85em;color:var(--muted);margin-top:5px">
+        <div class="disclaimer">
             *Jumlah ini merupakan total keseluruhan peserta lulus menurut Admin,
-            bukan berdasarkan data yang sedang ditayangkan.
+            bukan berdasarkan data yang ditampilkan di bawah.
         </div>
     </div>
 
-    <h3>Daftar Hasil yang <strong>DITAYANGKAN</strong> Admin</h3>
+    <!-- JUMLAH DATA DITAYANGKAN -->
+    <div class="info-box">
+        Data yang sedang <strong>DITAYANGKAN</strong>:
+        <strong id="tayangCount">0</strong> peserta
+    </div>
+
+    <h3>Daftar Hasil yang Ditayangkan Admin</h3>
 
     <div id="realtimeResults">
         <p style="text-align:center;color:var(--muted)">Memuat data...</p>
@@ -188,22 +200,25 @@ db.ref('sekolah').on('value', s=>{allSekolah=s.val()||{};render()});
 db.ref('penilaian').on('value', s=>{allPenilaian=s.val()||{};render()});
 
 function render(){
-    const box=document.getElementById('realtimeResults');
-    const count=document.getElementById('lulusCount');
-    box.innerHTML='';
+    const box = document.getElementById('realtimeResults');
+    const lulusCount = document.getElementById('lulusCount');
+    const tayangCount = document.getElementById('tayangCount');
+    box.innerHTML = '';
 
-    /* TOTAL LULUS (DISCLAIMER ADMIN) */
-    count.textContent = Object.values(allPenilaian)
+    /* TOTAL LULUS (GLOBAL ADMIN) */
+    lulusCount.textContent = Object.values(allPenilaian)
         .filter(p => p.hasilLulus && allPeserta[p.idPeserta])
         .length;
 
-    /* DATA DITAYANGKAN → REVERSE URUTAN ADMIN */
+    /* DATA DITAYANGKAN (URUT ADMIN → REVERSE) */
     const data = Object.values(allPenilaian)
         .filter(p => p.statusTayang && allPeserta[p.idPeserta])
-        .reverse(); // 🔥 INI YANG MEMBALIK URUTAN
+        .reverse();
+
+    tayangCount.textContent = data.length;
 
     if(!data.length){
-        box.innerHTML='<p style="text-align:center;color:var(--muted)">Belum ada hasil yang ditayangkan.</p>';
+        box.innerHTML = '<p style="text-align:center;color:var(--muted)">Belum ada hasil yang ditayangkan.</p>';
         return;
     }
 
