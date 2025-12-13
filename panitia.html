@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPI Road to Show Goes to School - Dashboard Panitia</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+document.addEventListener("contextmenu", e => e.preventDefault());
+document.addEventListener("selectstart", e => e.preventDefault());
+document.addEventListener("keydown", e => {
+  if (
+    e.key === "F12" ||
+    (e.ctrlKey && ["u","U","c","C","x","X","s","S","a","A"].includes(e.key)) ||
+    (e.ctrlKey && e.shiftKey && ["I","i","J","j"].includes(e.key))
+  ) e.preventDefault();
+});
+</script>
+    <style>
+        /* Variabel Warna Merah-Putih-Abu */
+        :root {
+            --color-primary: #dc3545; /* Merah Utama (Aksi) */
+            --color-secondary: #f8f9fa; /* Putih/Terang */
+            --color-text: #343a00; /* Abu Tua (Teks) */
+            --color-background: #e9ecef; /* Abu Muda (Background Halaman) */
+            --color-card-bg: #ffffff; /* Putih (Background Kontainer) */
+            --color-accent: #6c757d; /* Abu Sedang (Garis/Border) */
+            --color-success: #28a745; /* Hijau (Lulus) */
+            --color-danger: #dc3545; /* Merah (Tidak Lulus/Hapus) */
+            --color-warning: #ffc107; /* Kuning (Panitia Akses/Ubah) */
+            --color-info: #007bff; /* Biru (Tayang) */
+        }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 0;
+            background-color: var(--color-background); 
+            color: var(--color-text);
+            line-height: 1.6;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .container { 
+            max-width: 1200px; 
+            margin: 20px auto; 
+            padding: 20px; 
+            background: var(--color-card-bg); 
+            border-radius: 12px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+        }
+        
+        /* Heading & Pemisah */
+        h1 { 
+            color: var(--color-primary); 
+            border-bottom: 3px solid var(--color-primary); 
+            padding-bottom: 10px; 
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        h2 { 
+            color: var(--color-text); 
+            border-bottom: 2px solid var(--color-accent); 
+            padding-bottom: 8px; 
+            margin-top: 25px;
+        }
+        
+        h3, h4 { 
+            color: var(--color-primary); 
+            margin-top: 15px; 
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background-color: var(--color-accent);
+            margin: 20px 0;
+        }
+        
+        /* Form Elements */
+        input[type="text"], 
+        input[type="number"], 
+        input[type="password"], 
+        select { 
+            width: calc(100% - 20px); 
+            padding: 10px; 
+            margin: 5px 0; 
+            border: 1px solid var(--color-accent); 
+            border-radius: 6px;
+            box-sizing: border-box; 
+        }
+
+        /* Tombol Dasar */
+        button { 
+            padding: 10px 20px; 
+            background-color: var(--color-primary); 
+            color: white; 
+            cursor: pointer; 
+            border: none; 
+            border-radius: 6px;
+            transition: background-color 0.3s, transform 0.1s; 
+            font-weight: bold;
+            margin: 5px;
+        }
+        
+        button:hover { 
+            background-color: #c82333; 
+            transform: translateY(-1px);
+        }
+
+        /* Area Tampilan Role */
+        .admin-view, .panitia-view, .user-view { 
+            margin-top: 20px; 
+            padding: 20px; 
+            border: 2px dashed var(--color-primary); 
+            border-radius: 8px;
+            background-color: var(--color-secondary);
+        }
+
+        /* Tab Panitia */
+        .panitia-tab-content { 
+            display: none; 
+            margin-top: 15px; 
+            padding: 20px; 
+            border: 1px solid var(--color-accent); 
+            border-radius: 6px; 
+            background-color: #ffffff;
+        }
+
+        /* Tombol Tab */
+        .tab-button {
+            background-color: var(--color-accent);
+            color: white;
+            padding: 10px 15px;
+            margin: 2px;
+        }
+        .tab-button.active { 
+            background-color: var(--color-primary); 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .tab-button:hover { 
+            background-color: var(--color-primary); 
+        }
+
+        /* Tabel Kontainer dan Scroll */
+        .table-container {
+            max-height: 400px; 
+            overflow-y: auto;
+            border: 1px solid var(--color-accent);
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+        .data-peserta table { 
+            width: 100%; 
+            border-collapse: collapse; 
+        }
+        .data-peserta th, .data-peserta td { 
+            border: 1px solid var(--color-accent); 
+            padding: 12px 8px; 
+            text-align: left; 
+            font-size: 0.9em; 
+            white-space: nowrap; 
+        }
+        .data-peserta th {
+            background-color: var(--color-accent);
+            color: white;
+            position: sticky; 
+            top: 0;
+            z-index: 10;
+        }
+        .data-peserta tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        /* Area Pencarian/Filter */
+        .search-area {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .search-area input {
+            width: 300px;
+            max-width: 100%;
+        }
+        
+        /* Style untuk kolom input dan indikator simpan */
+        .input-with-status {
+            display: flex;
+            align-items: center;
+            gap: 5px; 
+        }
+        .input-with-status input {
+            width: 80px; 
+            margin: 0;
+            padding: 5px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        /* Style untuk indikator status (OK) */
+        .save-status {
+            font-size: 0.9em;
+            font-weight: bold;
+            color: var(--color-success);
+            width: 20px;
+            text-align: center;
+            transition: opacity 0.3s;
+        }
+
+
+        /* Responsif untuk Mobile */
+        @media (max-width: 768px) {
+            .data-peserta td .input-with-status {
+                flex-direction: row; 
+                justify-content: space-between;
+                gap: 5px;
+            }
+            .data-peserta td .input-with-status input {
+                width: 70px; 
+                font-size: 0.8em;
+            }
+            .panitia-view > div:first-of-type {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .tab-button {
+                flex: 1 1 30%; 
+                min-width: 100px;
+                margin: 2px;
+            }
+            .search-area {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search-area input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🏆 PPI Road to Show Goes to School</h1>
+        
+        <div id="panitia-view" class="panitia-view">
+            <h2>Dashboard Panitia (Input Data Fisik & Peserta)</h2>
+            <div style="text-align: right;"><button onclick="logout()" style="background-color: var(--color-accent);">Logout</button></div>
+            
+            <hr>
+
+            <div style="text-align: center; margin-bottom: 10px;">
+                <button class="tab-button active" onclick="showPanitiaTab('inputPeserta')">Nama Peserta</button>
+                <button class="tab-button" onclick="showPanitiaTab('inputBB')">Berat Badan (BB)</button>
+                <button class="tab-button" onclick="showPanitiaTab('inputTB')">Tinggi Badan (TB)</button>
+            </div>
+
+            <div id="inputPeserta" class="panitia-tab-content" style="display: block;">
+                <h3>Input Peserta Baru</h3>
+                <form id="panitiaInputForm" onsubmit="daftarPesertaHandler(event)">
+                    <label for="panitiaSekolahSelect">Pilih Sekolah:</label>
+                    <select id="panitiaSekolahSelect" required></select><br>
+                    <label for="panitiaNama">Nama Lengkap:</label>
+                    <input type="text" id="panitiaNama" required><br>
+                    <label for="panitiaJenisKelamin">Jenis Kelamin:</label>
+                    <select id="panitiaJenisKelamin" required>
+                        <option value="">Pilih</option>
+                        <option value="Cewek">Cewek</option>
+                        <option value="Cowok">Cowok</option>
+                    </select><br>
+                    <button type="submit" style="background-color: var(--color-primary);">Daftar Peserta Baru</button>
+                </form>
+                
+                <h4 style="margin-top: 20px;">Daftar Peserta</h4>
+                <div class="search-area">
+                    <input type="text" id="searchCrud" placeholder="Cari Nama atau Kode Peserta..." onkeyup="filterTable('inputPeserta', 'searchCrud', 2, 1)">
+                </div>
+                <div class="data-peserta table-container" id="panitiaCrudList">Memuat data peserta...</div>
+            </div>
+
+            <div id="inputBB" class="panitia-tab-content">
+                <h3>Input/Ubah Berat Badan (BB)</h3>
+                <div class="search-area">
+                    <input type="text" id="searchBB" placeholder="Cari Nama atau Kode Peserta..." onkeyup="filterTable('inputBB', 'searchBB', 2, 1)">
+                </div>
+                <div class="data-peserta table-container" id="panitiaBBList"></div>
+            </div>
+
+            <div id="inputTB" class="panitia-tab-content">
+                <h3>Input/Ubah Tinggi Badan (TB)</h3>
+                 <div class="search-area">
+                    <input type="text" id="searchTB" placeholder="Cari Nama atau Kode Peserta..." onkeyup="filterTable('inputTB', 'searchTB', 2, 1)">
+                </div>
+                <div class="data-peserta table-container" id="panitiaTBList"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // =========================================================================
+        // --- KONFIGURASI FIREBASE & INISIALISASI ---
+        // =========================================================================
+        const FIREBASE_CONFIG = {
+            apiKey: "AIzaSyDpPEkKbEt6b_v2OWlBfGuaVQpBg2-RWR4",
+            authDomain: "cwu-gen-2.firebaseapp.com",
+            databaseURL: "https://cwu-gen-2-default-rtdb.firebaseio.com",
+            projectId: "cwu-gen-2",
+            storageBucket: "cwu-gen-2.appspot.com",
+            messagingSenderId: "40585612014",
+            appId: "1:40585612014:web:c88141fee3699aca68181ff"
+        };
+        firebase.initializeApp(FIREBASE_CONFIG);
+        const database = firebase.database();
+        
+        const USER_ID = "PAN_001"; 
+
+        let allSekolah = {};
+        let allPeserta = {}; 
+        let allPenilaian = {};
+        let allKetentuan = {};
+        
+        function checkAuth() {
+            if (localStorage.getItem('role') !== 'panitia' || localStorage.getItem('loggedIn') !== 'true') {
+                 alert("Akses ditolak. Silakan login sebagai Panitia.");
+                 window.location.href = 'index.html';
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('role');
+            localStorage.removeItem('loggedIn');
+            localStorage.setItem('logoutMessage', 'Anda telah berhasil logout.');
+            window.location.href = 'index.html';
+        }
+
+
+        function initializeDataListeners() {
+            database.ref('ketentuanLulus').once('value', (snapshot) => {
+                if (!snapshot.exists()) {
+                     database.ref('ketentuanLulus/Cewek').set({ minBerat: 45, maxBerat: 60, minTinggi: 155, maxTinggi: 170 });
+                     database.ref('ketentuanLulus/Cowok').set({ minBerat: 55, maxBerat: 75, minTinggi: 165, maxTinggi: 180 });
+                }
+            });
+            
+            database.ref('ketentuanLulus').on('value', (snapshot) => {
+                allKetentuan = snapshot.val() || {};
+                refreshAdminPanitiaViews(); 
+            });
+
+            database.ref('sekolah').on('value', (snapshot) => {
+                allSekolah = snapshot.val() || {};
+                updateSekolahDropdowns('panitiaSekolahSelect'); 
+                refreshAdminPanitiaViews();
+            });
+
+            database.ref('penilaian').on('value', (snapshot) => {
+                allPenilaian = snapshot.val() || {};
+                refreshAdminPanitiaViews();
+            });
+            
+            database.ref('peserta').on('value', (snapshot) => {
+                allPeserta = snapshot.val() || {}; 
+                refreshAdminPanitiaViews();
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+             checkAuth();
+             initializeDataListeners();
+             showPanitiaTab('inputPeserta'); 
+        });
+
+
+        function refreshAdminPanitiaViews() {
+            const activeTab = document.querySelector('.panitia-tab-content[style*="block"]');
+            if (activeTab) {
+                if (activeTab.id === 'inputPeserta') renderPanitiaCrudTable();
+                if (activeTab.id === 'inputBB') renderPanitiaBBTable();
+                if (activeTab.id === 'inputTB') renderPanitiaTBTable();
+            } else {
+                 renderPanitiaCrudTable(); 
+            }
+        }
+        
+        function showPanitiaTab(tabId) {
+            document.querySelectorAll('.panitia-tab-content').forEach(tab => {
+                tab.style.display = 'none';
+            });
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById(tabId).style.display = 'block';
+            document.querySelector(`button[onclick="showPanitiaTab('${tabId}')"]`).classList.add('active');
+            
+            // Render ulang tabel saat tab dibuka
+            if (tabId === 'inputPeserta') {
+                renderPanitiaCrudTable();
+                document.getElementById('searchCrud').value = ''; 
+            }
+            if (tabId === 'inputBB') {
+                renderPanitiaBBTable();
+                document.getElementById('searchBB').value = ''; 
+            }
+            if (tabId === 'inputTB') {
+                renderPanitiaTBTable();
+                document.getElementById('searchTB').value = ''; 
+            }
+        }
+
+        // =========================================================================
+        // --- LOGIKA UTILITY (Global & Penilaian) ---
+        // =========================================================================
+
+        function updateSekolahDropdowns(dropdownId) {
+            const sekolahSelect = document.getElementById(dropdownId);
+            if (sekolahSelect) {
+                sekolahSelect.innerHTML = '<option value="">Pilih</option>';
+                Object.keys(allSekolah).forEach((key) => {
+                    const sekolah = allSekolah[key];
+                    if (sekolah.statusPenilaian === 'Dibuka') {
+                        const option = document.createElement('option');
+                        option.value = key;
+                        option.textContent = sekolah.namaSekolah;
+                        sekolahSelect.appendChild(option);
+                    }
+                });
+            }
+        }
+
+        function getPenilaianData(idPeserta) {
+             const foundKey = Object.keys(allPenilaian).find(key => allPenilaian[key].idPeserta === idPeserta);
+             return foundKey ? { ...allPenilaian[foundKey], idPenilaian: foundKey } : {};
+        }
+
+        function generateRandomCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const numbers = '0123456789';
+            let code = [];
+            
+            code.push(chars[Math.floor(Math.random() * chars.length)]);
+            code.push(chars[Math.floor(Math.random() * chars.length)]);
+
+            code.push(numbers[Math.floor(Math.random() * numbers.length)]);
+            code.push(numbers[Math.floor(Math.random() * numbers.length)]);
+
+            for (let i = code.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [code[i], code[j]] = [code[j], code[i]];
+            }
+
+            return code.join('');
+        }
+        
+        /**
+         * @param {string} containerId ID div kontainer tabel.
+         * @param {string} searchInputId ID input pencarian.
+         * @param {number} nameColIndex Index kolom Nama (contoh: 2 jika No, Kode, Nama).
+         * @param {number} codeColIndex Index kolom Kode (contoh: 1 jika No, Kode, Nama).
+         */
+        function filterTable(containerId, searchInputId, nameColIndex, codeColIndex) {
+            const input = document.getElementById(searchInputId);
+            const filter = input.value.toUpperCase();
+            const tableContainer = document.getElementById(containerId).querySelector('.table-container');
+            if (!tableContainer) return;
+            
+            const tr = tableContainer.getElementsByTagName("tr");
+            
+            for (let i = 0; i < tr.length; i++) {
+                if (tr[i].parentNode.tagName === 'THEAD') continue; 
+
+                const tdCode = tr[i].getElementsByTagName("td")[codeColIndex];
+                const tdName = tr[i].getElementsByTagName("td")[nameColIndex];
+
+                if (tdName && tdCode) {
+                    let nameText = tdName.textContent || tdName.innerText;
+                    let codeText = tdCode.textContent || tdCode.innerText;
+                    
+                    if (nameText.toUpperCase().indexOf(filter) > -1 || codeText.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        function calculateLulusStatus(jenisKelamin, berat, tinggi) {
+            const kriteria = allKetentuan[jenisKelamin];
+            if (!kriteria || !berat || !tinggi) {
+                return false; // Belum bisa dinilai lengkap
+            }
+            
+            const idealBB = berat >= kriteria.minBerat && berat <= kriteria.maxBerat;
+            const idealTB = tinggi >= kriteria.minTinggi && tinggi <= kriteria.maxTinggi;
+            
+            return idealBB && idealTB;
+        }
+
+        /**
+         * Fungsi Inti Simpan Penilaian (Dipanggil saat input kehilangan fokus/onblur)
+         * @param {string} idPeserta - ID Firebase peserta.
+         * @param {string} field - 'BB' atau 'TB'.
+         */
+        function savePenilaian(idPeserta, field) {
+            const peserta = allPeserta[idPeserta];
+            if (!peserta) return;
+
+            const inputElement = document.getElementById(`${field.toLowerCase()}-input-${idPeserta}`);
+            if (!inputElement) return;
+
+            const value = inputElement.value.trim();
+            const existingPenilaian = getPenilaianData(idPeserta);
+            const existingIdPenilaian = existingPenilaian.idPenilaian;
+            
+            const numericValue = parseFloat(value);
+            
+            // Set null jika input kosong atau NaN
+            const cleanValue = (isNaN(numericValue) || value === "") ? null : numericValue;
+
+            const oldBerat = existingPenilaian.beratBadan !== undefined ? existingPenilaian.beratBadan : null;
+            const oldTinggi = existingPenilaian.tinggiBadan !== undefined ? existingPenilaian.tinggiBadan : null;
+
+            const newBerat = field === 'BB' ? cleanValue : oldBerat; 
+            const newTinggi = field === 'TB' ? cleanValue : oldTinggi; 
+            
+            const keterangan = existingPenilaian.keterangan || null;
+            
+            // Dapatkan indikator status
+            const statusIndicator = document.getElementById(`status-${field.toLowerCase()}-${idPeserta}`);
+            
+            // Jangan simpan jika nilai tidak berubah dan bukan null, atau jika kedua nilai null/kosong
+            if (field === 'BB' && newBerat === oldBerat && newBerat !== null) return;
+            if (field === 'TB' && newTinggi === oldTinggi && newTinggi !== null) return;
+
+            if (newBerat === null && newTinggi === null && !existingIdPenilaian) {
+                 // Jika kedua nilai null dan belum ada entri di Firebase, abaikan.
+                return;
+            }
+
+
+            const hasCompleteData = newBerat !== null && newTinggi !== null;
+            const hasilLulus = hasCompleteData ? calculateLulusStatus(peserta.jenisKelamin, newBerat, newTinggi) : false;
+
+            const dataToSave = {
+                idPeserta: idPeserta,
+                idAdmin: USER_ID, 
+                tglPenilaian: new Date().toISOString(),
+                beratBadan: newBerat, 
+                tinggiBadan: newTinggi, 
+                hasilLulus: hasilLulus,
+                statusTayang: existingPenilaian.statusTayang || false,
+                keterangan: keterangan
+            };
+
+            const updateData = {
+                beratBadan: newBerat, 
+                tinggiBadan: newTinggi,
+                hasilLulus: hasilLulus,
+                tglPenilaian: new Date().toISOString()
+            };
+
+            if (statusIndicator) {
+                 statusIndicator.textContent = '...'; 
+                 statusIndicator.style.opacity = '1';
+            }
+
+            if (existingIdPenilaian) {
+                // UPDATE
+                database.ref('penilaian/' + existingIdPenilaian).update(updateData)
+                .then(() => {
+                   if (statusIndicator) {
+                       statusIndicator.textContent = '✔'; 
+                       setTimeout(() => { statusIndicator.style.opacity = '0'; }, 1500);
+                   }
+                }).catch(error => {
+                    alert(`Gagal mengubah data ${field}: ${error.message}`);
+                    if (statusIndicator) { statusIndicator.textContent = 'X'; }
+                });
+
+            } else {
+                // INPUT BARU (CREATE)
+                const newPenilaianRef = database.ref('penilaian').push();
+                newPenilaianRef.set(dataToSave)
+                .then(() => {
+                    if (statusIndicator) {
+                       statusIndicator.textContent = '✔'; 
+                       setTimeout(() => { statusIndicator.style.opacity = '0'; }, 1500);
+                    }
+                }).catch(error => {
+                    alert(`Gagal menyimpan data ${field} baru: ${error.message}`);
+                    if (statusIndicator) { statusIndicator.textContent = 'X'; }
+                });
+            }
+        }
+
+
+        // =========================================================================
+        // --- LOGIKA PANITIA - TAB 1: CRUD NAMA ---
+        // =========================================================================
+        
+        function daftarPesertaHandler(event) {
+            event.preventDefault();
+            const idSekolah = document.getElementById('panitiaSekolahSelect').value;
+            const nama = document.getElementById('panitiaNama').value;
+            const jenisKelamin = document.getElementById('panitiaJenisKelamin').value;
+
+            if (idSekolah && nama && jenisKelamin) {
+                
+                const submitButton = event.target.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.textContent = 'Membuat Kode Acak...';
+
+                const tryRegister = async () => {
+                    let kodePeserta = generateRandomCode();
+                    let isUnique = false;
+                    let attempts = 0;
+
+                    while (!isUnique && attempts < 10) { 
+                        const exists = Object.values(allPeserta).some(p => p.kodePeserta === kodePeserta);
+                        
+                        if (!exists) {
+                            isUnique = true;
+                        } else {
+                            kodePeserta = generateRandomCode(); 
+                            attempts++;
+                        }
+                    }
+
+                    if (!isUnique) {
+                        alert('Gagal menghasilkan kode unik setelah 10 kali percobaan. Silakan coba lagi.');
+                        submitButton.disabled = false;
+                        submitButton.textContent = 'Daftar Peserta Baru';
+                        return;
+                    }
+
+                    database.ref('peserta').push({
+                        idSekolah: idSekolah,
+                        nama: nama,
+                        jenisKelamin: jenisKelamin,
+                        kodePeserta: kodePeserta 
+                    })
+                    .then(() => {
+                        alert(`Pendaftaran peserta berhasil! Kode Peserta: ${kodePeserta}`);
+                        document.getElementById('panitiaInputForm').reset();
+                    })
+                    .catch((dbError) => {
+                        alert('Gagal menyimpan data peserta: ' + dbError.message);
+                    })
+                    .finally(() => {
+                        submitButton.disabled = false;
+                        submitButton.textContent = 'Daftar Peserta Baru';
+                    });
+                };
+
+                tryRegister();
+
+            } else {
+                alert('Semua kolom harus diisi.');
+            }
+        }
+        
+        function renderPanitiaCrudTable() {
+            const pesertaListDiv = document.getElementById('panitiaCrudList');
+            if (!pesertaListDiv) return;
+            
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Kode Acak</th>
+                            <th>Nama</th>
+                            <th>Sekolah</th>
+                            <th>J.Kelamin</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            const sortedPesertaKeys = Object.keys(allPeserta).sort((a, b) => a.localeCompare(b));
+
+            let noUrut = 1;
+            for (const idPeserta of sortedPesertaKeys) {
+                const p = allPeserta[idPeserta];
+                const sekolahNama = allSekolah[p.idSekolah]?.namaSekolah || 'N/A';
+
+                html += `
+                    <tr>
+                        <td>${noUrut++}</td>
+                        <td><strong>${p.kodePeserta || '--'}</strong></td>
+                        <td>${p.nama}</td>
+                        <td>${sekolahNama}</td>
+                        <td>${p.jenisKelamin}</td>
+                    </tr>
+                `;
+            }
+            
+            html += '</tbody></table>';
+            pesertaListDiv.innerHTML = html;
+            filterTable('inputPeserta', 'searchCrud', 2, 1); // Index: Nama=2, Kode=1
+        }
+
+        
+        // =========================================================================
+        // --- LOGIKA PANITIA - TAB 2: INPUT BB (Auto-Save) ---
+        // =========================================================================
+
+        function renderPanitiaBBTable() {
+            const pesertaListDiv = document.getElementById('panitiaBBList');
+            if (!pesertaListDiv) return;
+            
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Kode Acak</th>
+                            <th>Nama (J.K)</th>
+                            <th>Input BB (kg)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            const sortedPesertaKeys = Object.keys(allPeserta).sort((a, b) => a.localeCompare(b));
+            
+            let noUrut = 1;
+            for (const idPeserta of sortedPesertaKeys) {
+                const p = allPeserta[idPeserta];
+                const penilaianData = getPenilaianData(idPeserta); 
+                
+                const currentBB = penilaianData.beratBadan !== null && penilaianData.beratBadan !== undefined ? penilaianData.beratBadan : '';
+
+                html += `
+                    <tr>
+                        <td>${noUrut++}</td>
+                        <td><strong>${p.kodePeserta || '--'}</strong></td>
+                        <td>${p.nama} (<span style="color: ${p.jenisKelamin === 'Cowok' ? '#007bff' : '#dc3545'}; font-weight: bold;">${p.jenisKelamin}</span>)</td>
+                        <td>
+                            <div class="input-with-status">
+                                <input type="number" step="0.1" id="bb-input-${idPeserta}" 
+                                    placeholder="Berat" value="${currentBB}" 
+                                    onblur="savePenilaian('${idPeserta}', 'BB')">
+                                <span class="save-status" id="status-bb-${idPeserta}" style="opacity: 0;"></span>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            html += '</tbody></table>';
+            pesertaListDiv.innerHTML = html;
+            filterTable('inputBB', 'searchBB', 2, 1); // Index: Nama=2, Kode=1
+        }
+
+        // =========================================================================
+        // --- LOGIKA PANITIA - TAB 3: INPUT TB (Auto-Save) ---
+        // =========================================================================
+
+        function renderPanitiaTBTable() {
+            const pesertaListDiv = document.getElementById('panitiaTBList');
+            if (!pesertaListDiv) return;
+            
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Kode Acak</th>
+                            <th>Nama (J.K)</th>
+                            <th>Input TB (cm)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            const sortedPesertaKeys = Object.keys(allPeserta).sort((a, b) => a.localeCompare(b));
+            
+            let noUrut = 1;
+            for (const idPeserta of sortedPesertaKeys) {
+                const p = allPeserta[idPeserta];
+                const penilaianData = getPenilaianData(idPeserta); 
+                
+                const currentTB = penilaianData.tinggiBadan !== null && penilaianData.tinggiBadan !== undefined ? penilaianData.tinggiBadan : '';
+
+                html += `
+                    <tr>
+                        <td>${noUrut++}</td>
+                        <td><strong>${p.kodePeserta || '--'}</strong></td>
+                        <td>${p.nama} (<span style="color: ${p.jenisKelamin === 'Cowok' ? '#007bff' : '#dc3545'}; font-weight: bold;">${p.jenisKelamin}</span>)</td>
+                        <td>
+                            <div class="input-with-status">
+                                <input type="number" step="0.1" id="tb-input-${idPeserta}" 
+                                    placeholder="Tinggi" value="${currentTB}"
+                                    onblur="savePenilaian('${idPeserta}', 'TB')">
+                                <span class="save-status" id="status-tb-${idPeserta}" style="opacity: 0;"></span>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            html += '</tbody></table>';
+            pesertaListDiv.innerHTML = html;
+            filterTable('inputTB', 'searchTB', 2, 1); // Index: Nama=2, Kode=1
+        }
+    </script>
+</body>
+</html>

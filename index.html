@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPI Road to Show Goes to School - Mode Seleksi</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    
+    <script>
+        // Kode Anti-Debugging / Anti-Inspect Element (tetap)
+        document.addEventListener("contextmenu", e => e.preventDefault());
+        document.addEventListener("selectstart", e => e.preventDefault());
+        document.addEventListener("keydown", e => {
+            if (
+                e.key === "F12" ||
+                (e.ctrlKey && ["u","U","c","C","x","X","s","S","a","A"].includes(e.key)) ||
+                (e.ctrlKey && e.shiftKey && ["I","i","J","j"].includes(e.key))
+            ) e.preventDefault();
+        });
+    </script>
+    
+    <style>
+        /* Variabel Warna Merah-Putih-Abu */
+        :root {
+            --color-primary: #dc3545;
+            --color-text: #343a40;
+            --color-background: #e9ecef;
+            --color-card-bg: #ffffff;
+            --color-accent: #6c757d;
+            --color-info: #007bff;
+            --color-warning: #ffc107;
+            --color-danger: #dc3545;
+            
+            /* Variabel Ukuran */
+            --container-max-width: 650px;
+            --spacing-large: 30px;
+            --spacing-medium: 15px;
+            --spacing-small: 10px;
+        }
+        
+        /* Box Sizing Penting untuk Flexbox */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0; 
+            padding: 0;
+            background-color: var(--color-background); 
+            color: var(--color-text);
+            line-height: 1.6;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .container { 
+            max-width: var(--container-max-width);
+            margin: var(--spacing-large) auto; 
+            padding: var(--spacing-large); 
+            background: var(--color-card-bg); 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            text-align: center;
+        }
+
+        /* Heading */
+        h1 { 
+            color: var(--color-primary); 
+            font-size: 2em;
+            font-weight: bold;
+            padding-bottom: var(--spacing-small); 
+            border-bottom: 3px solid var(--color-primary); 
+            margin-bottom: var(--spacing-large);
+            transition: filter 0.3s;
+        }
+
+        /* Grup Tombol Mode */
+        #mode-selection {
+            display: flex;
+            flex-direction: column; 
+            gap: 12px;
+            margin-bottom: var(--spacing-large);
+            transition: opacity 0.3s;
+        }
+        
+        /* Style dasar tombol */
+        .mode-button { 
+            width: 100%;
+            padding: 14px;
+            color: white; 
+            cursor: pointer; 
+            border: none; 
+            border-radius: 8px;
+            transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s; 
+            font-weight: bold;
+            font-size: 1.05em;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+            text-decoration: none;
+            display: block; 
+            text-align: center;
+            flex-grow: 1; 
+        }
+        .mode-button:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+        .mode-button:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Pewarnaan Tombol */
+        .btn-user { background-color: var(--color-info); }
+        .btn-user:hover { background-color: #0056b3; }
+        .btn-admin { background-color: var(--color-danger); }
+        .btn-admin:hover { background-color: #a71d2a; }
+        .btn-panitia { background-color: var(--color-warning); color: var(--color-text); }
+        .btn-panitia:hover { background-color: #e0a800; }
+
+        /* Tombol Developer */
+        #developer-link {
+            margin-top: 20px;
+            transition: opacity 0.3s;
+            display: flex;
+            justify-content: center;
+        }
+        /* Style untuk tombol developer */
+        #developer-link button {
+            text-decoration: none;
+            width: 100%; 
+            max-width: 300px; 
+            background-color: var(--color-accent);
+            color: white;
+            font-size: 0.95em;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+        }
+        #developer-link button:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+        #developer-link button:disabled {
+            background-color: #495057;
+            cursor: wait;
+            opacity: 0.9;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* PESAN JIKA TOMBOL DITUTUP */
+        #closed-message {
+            display: none; /* Default tersembunyi */
+            padding: 20px;
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        /* --- MODAL LOGIN (tetap) --- */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7); 
+            padding-top: 50px;
+            backdrop-filter: blur(3px); 
+        }
+        .modal-content {
+            background-color: var(--color-card-bg);
+            margin: auto; 
+            padding: var(--spacing-large);
+            border-radius: 12px;
+            max-width: 380px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: left;
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .modal-content h2 {
+            text-align: center;
+            color: var(--color-primary);
+            border-bottom: 2px solid var(--color-primary);
+            padding-bottom: var(--spacing-small);
+            margin-top: 0;
+            margin-bottom: var(--spacing-medium);
+        }
+        #login-form label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+        }
+        #login-form input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid var(--color-accent);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1.05em;
+            outline-color: var(--color-primary);
+        }
+        #login-form button[type="submit"] {
+            width: 100%;
+            background-color: var(--color-primary);
+            padding: 12px;
+            font-size: 1.05em;
+            border-radius: 6px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        #login-form button[type="submit"]:hover {
+            background-color: #a71d2a;
+        }
+        .btn-back-modal {
+            width: 100%;
+            background-color: var(--color-accent);
+            margin-top: 10px;
+            padding: 12px;
+            font-size: 1em;
+            border-radius: 6px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-back-modal:hover {
+            background-color: #5a6268;
+        }
+        
+        /* --- RESPONSIFITAS LANJUTAN (FINAL FIX) --- */
+        @media (max-width: 767px) {
+            .container {
+                margin: 20px 15px;
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.7em;
+                margin-bottom: 20px;
+            }
+            #mode-selection {
+                flex-direction: column; 
+                gap: 10px;
+            }
+            #developer-link button {
+                width: 100%;
+            }
+        }
+        @media (min-width: 768px) {
+            #mode-selection {
+                flex-direction: row; 
+                justify-content: space-between;
+                gap: 15px;
+            }
+            #mode-selection > * { 
+                flex-basis: 0;
+                flex-grow: 1; 
+            }
+            #developer-link button {
+                width: auto;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🏆 PPI Road to Show Goes to School</h1>
+        
+        <div id="loading-initial" style="text-align: center; padding: 30px;">
+            Memeriksa status tombol...
+        </div>
+
+        <div id="content-wrapper" style="display: none;">
+            <div id="mode-selection">
+                <a href="user.html" class="mode-button btn-user">
+                    Lihat Hasil (Peserta)
+                </a>
+                
+                <button onclick="showLogin('admin')" class="mode-button btn-admin">
+                    Login Admin
+                </button>
+                
+                <button onclick="showLogin('panitia')" class="mode-button btn-panitia">
+                    Login Panitia
+                </button>
+            </div>
+
+            <div id="developer-link">
+                <button id="developer-button" onclick="logDeveloperClick()">
+                    🧑‍💻 Biodata Developer
+                </button>
+            </div>
+        </div>
+
+        <div id="closed-message">
+            Akses saat ini sedang ditutup oleh administrator.
+        </div>
+
+        <div id="login-modal" class="modal">
+            <div class="modal-content">
+                <h2 id="login-title"></h2>
+                <form id="login-form" onsubmit="handleLogin(event)">
+                    <input type="hidden" id="role-input">
+                    <label for="password-input">🔑 Sandi:</label>
+                    <input type="password" id="password-input" required>
+                    <button type="submit" class="mode-button">Login</button>
+                    <p id="login-error" style="color: var(--color-danger); margin-top: 10px; text-align: center; font-weight: bold;"></p>
+                </form>
+                <button onclick="hideLogin()" class="btn-back-modal">Kembali</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // =========================================================================
+        // --- KONFIGURASI DAN LOGIKA JAVASCRIPT ---
+        // =========================================================================
+        const FIREBASE_CONFIG = {
+            apiKey: "AIzaSyDpPEkKbEt6b_v2OWlBfGuaVQpBg2-RWR4",
+            authDomain: "cwu-gen-2.firebaseapp.com",
+            databaseURL: "https://cwu-gen-2-default-rtdb.firebaseio.com",
+            projectId: "cwu-gen-2",
+            storageBucket: "cwu-gen-2.appspot.com",
+            messagingSenderId: "40585612014",
+            appId: "1:40585612014:web:c88141fee3699aca68181ff"
+        };
+        firebase.initializeApp(FIREBASE_CONFIG);
+        const database = firebase.database();
+        
+        const ADMIN_PASSWORD = "ppiadminku"; 
+        const PANITIA_PASSWORD = "ppipanitia"; 
+        
+        const loginModal = document.getElementById('login-modal');
+        const mainTitle = document.querySelector('.container > h1');
+        const contentWrapper = document.getElementById('content-wrapper');
+        const closedMessage = document.getElementById('closed-message');
+        const loadingInitial = document.getElementById('loading-initial');
+
+        // --- FUNGSI BARU: CEK TOGGLE DARI FIREBASE ---
+        function checkKepoToggle() {
+            // Kita menggunakan 'value' listener agar setiap perubahan langsung terupdate
+            database.ref('kepo_toggle').on('value', (snapshot) => {
+                loadingInitial.style.display = 'none'; // Sembunyikan loading
+                const status = snapshot.val(); // Ambil status, misalnya "on" atau "off"
+
+                if (status === 'on') {
+                    contentWrapper.style.display = 'block'; // Tampilkan semua tombol
+                    closedMessage.style.display = 'none'; // Sembunyikan pesan tutup
+                } else {
+                    // Jika status 'off', null (belum ada data), atau nilai lain
+                    contentWrapper.style.display = 'none'; // Sembunyikan semua tombol
+                    closedMessage.style.display = 'block'; // Tampilkan pesan tutup
+                }
+            }, (error) => {
+                console.error("Error membaca status toggle:", error);
+                loadingInitial.style.display = 'none';
+                closedMessage.textContent = 'Akses ditutup. Gagal koneksi ke server.';
+                closedMessage.style.display = 'block';
+            });
+        }
+
+        // Jalankan pengecekan saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', () => {
+            checkKepoToggle();
+            if(localStorage.getItem('logoutMessage')) {
+                alert(localStorage.getItem('logoutMessage'));
+                localStorage.removeItem('logoutMessage');
+            }
+        });
+        
+        // --- LOGIKA LOGIN (tetap) ---
+        function showLogin(role) {
+            mainTitle.style.filter = 'blur(2px)';
+            contentWrapper.style.opacity = '0.5';
+            
+            loginModal.style.display = 'flex'; 
+            loginModal.style.alignItems = 'center';
+            loginModal.style.justifyContent = 'center';
+            
+            document.getElementById('role-input').value = role;
+            document.getElementById('login-title').textContent = role === 'admin' ? 'Login Admin' : 'Login Panitia';
+            
+            document.getElementById('password-input').value = '';
+            document.getElementById('login-error').textContent = '';
+            document.getElementById('password-input').focus();
+        }
+
+        function hideLogin() {
+            loginModal.style.display = 'none';
+            
+            mainTitle.style.filter = 'none';
+            contentWrapper.style.opacity = '1';
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const password = document.getElementById('password-input').value;
+            const role = document.getElementById('role-input').value;
+            const errorElement = document.getElementById('login-error');
+            
+            let correctPassword = role === 'admin' ? ADMIN_PASSWORD : PANITIA_PASSWORD;
+
+            if (password === correctPassword) {
+                localStorage.setItem('role', role);
+                localStorage.setItem('loggedIn', 'true');
+                
+                if (role === 'admin') {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'panitia.html';
+                }
+            } else {
+                errorElement.textContent = "Sandi salah!";
+                document.getElementById('password-input').value = '';
+            }
+        }
+        
+        window.onclick = function(event) {
+            if (event.target == loginModal) {
+                hideLogin();
+            }
+        }
+        
+        // --- LOG KLIK DEVELOPER (tetap) ---
+        function getNamaHari(dayIndex) {
+            const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+            return days[dayIndex];
+        }
+
+        async function logDeveloperClick() {
+            const devButton = document.getElementById('developer-button');
+            const originalHtml = devButton.innerHTML;
+            
+            devButton.disabled = true;
+            devButton.innerHTML = '⚡ Memproses Data...'; 
+
+            const now = new Date();
+            const timestamp = now.getTime();
+            const logRef = database.ref('developer_clicks'); 
+            const counterRef = database.ref('developer_clicks_count'); 
+
+            const logData = {
+                timestamp: timestamp,
+                tanggal: now.toLocaleDateString('id-ID'),
+                hari: getNamaHari(now.getDay()),
+                jam: now.toLocaleTimeString('id-ID'),
+                perangkat: navigator.userAgent,
+            };
+
+            try {
+                await logRef.push(logData);
+                await counterRef.transaction((currentCount) => {
+                    return (currentCount || 0) + 1;
+                });
+                
+            } catch (error) {
+                console.error("Terjadi error saat mencatat log Firebase:", error);
+            } finally {
+                devButton.disabled = false;
+                devButton.innerHTML = originalHtml;
+                window.location.href = 'biodata.html';
+            }
+        }
+
+    </script>
+</body>
+</html>

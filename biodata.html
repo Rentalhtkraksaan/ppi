@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biodata Developer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
+    <script>
+document.addEventListener("contextmenu", e => e.preventDefault());
+document.addEventListener("selectstart", e => e.preventDefault());
+document.addEventListener("keydown", e => {
+  if (
+    e.key === "F12" ||
+    (e.ctrlKey && ["u","U","c","C","x","X","s","S","a","A"].includes(e.key)) ||
+    (e.ctrlKey && e.shiftKey && ["I","i","J","j"].includes(e.key))
+  ) e.preventDefault();
+});
+</script>
+    <style>
+        /* Variabel Warna */
+        :root {
+            --color-primary: #dc3545; /* Merah */
+            --color-text: #343a40; /* Abu Tua */
+            --color-background: #f0f4f8; /* Background Soft */
+            --color-card-bg: #ffffff; 
+            --color-accent: #6c757d; /* Abu Sedang */
+            --color-info: #007bff; /* Biru */
+        }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 0;
+            background-color: var(--color-background); 
+            color: var(--color-text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased; /* Teks lebih halus */
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .container { 
+            max-width: 700px; /* Lebar sedikit diperluas untuk desktop */
+            margin: 50px auto; 
+            padding: 30px; 
+            background: var(--color-card-bg); 
+            border-radius: 12px; 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15); /* Shadow lebih menonjol */
+            text-align: center;
+        }
+        
+        /* Judul Utama */
+        h1 { 
+            color: var(--color-primary); 
+            font-size: 2.2em;
+            padding-bottom: 12px; 
+            border-bottom: 5px solid var(--color-primary); 
+            margin-bottom: 35px;
+            font-weight: 700;
+        }
+        
+        /* Sub-Judul Bagian */
+        h2 {
+            font-size: 1.4em;
+            color: var(--color-info);
+            border-bottom: 1px solid #dee2e6; /* Abu yang lebih terang */
+            padding-bottom: 8px;
+            margin-top: 30px;
+            margin-bottom: 18px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .developer-info {
+            padding: 25px;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            background-color: #ffffff; /* Lebih fokus pada kartu utama */
+        }
+        
+        /* Key-Value Pair Styling (Info Dasar & Kontak) */
+        .info-group, .info-list {
+            text-align: left;
+            margin-bottom: 25px;
+        }
+        .info-item {
+            display: flex;
+            align-items: baseline;
+            margin: 10px 0;
+        }
+        .info-item strong {
+             display: inline-block;
+             min-width: 180px; /* Lebar label yang kokoh di desktop */
+             font-weight: 600;
+             color: var(--color-text);
+        }
+        .info-item span {
+             flex-grow: 1;
+             color: var(--color-primary); 
+             font-weight: 600;
+        }
+        .value { 
+             color: var(--color-text) !important;
+             font-weight: 400 !important;
+        }
+        
+        /* Link Styling Kontak (WA & IG) */
+        .info-item a {
+            text-decoration: none;
+            color: var(--color-info) !important; 
+            transition: color 0.2s;
+            outline: none; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+        .info-item a:hover {
+            color: #0056b3 !important;
+        }
+
+        /* Styling Daftar (Semua List seragam dengan Bullet Point) */
+        .info-list ul {
+            list-style-type: disc; /* Bullet point (•) untuk semua daftar */
+            list-style-position: outside;
+            padding-left: 30px;
+            margin-top: 10px;
+        }
+        .info-list li {
+            font-weight: 400;
+            margin-bottom: 8px; 
+            color: var(--color-text);
+            display: list-item; 
+        }
+        /* Style untuk judul daftar Pengalaman/Proyek */
+        .info-list strong {
+            display: block; 
+            margin-top: 15px; 
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+
+        /* Tombol Kembali */
+        .back-button {
+            padding: 14px 30px;
+            background-color: var(--color-info);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            margin-top: 40px;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+        }
+        .back-button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        /* --- MEDIA QUERIES (RESPONSIVITAS) --- */
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px 10px;
+                padding: 20px 15px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+            h1 { 
+                font-size: 1.8em;
+                margin-bottom: 25px;
+            }
+            .developer-info {
+                padding: 15px;
+            }
+            
+            /* Pada HP, label dan nilai bertumpuk */
+            .info-item {
+                flex-direction: column; 
+                align-items: flex-start;
+                margin: 15px 0;
+                padding: 0 5px;
+                border-bottom: 1px dashed #e9ecef; /* Pemisah per item di mobile */
+            }
+            .info-item strong {
+                min-width: 100%;
+                margin-bottom: 2px;
+                font-size: 0.95em;
+                color: var(--color-accent);
+            }
+            .info-item span {
+                color: var(--color-text);
+                font-weight: 600;
+                font-size: 1em;
+            }
+            /* Link di mobile juga harus rapi */
+            .info-item a {
+                font-weight: 600;
+            }
+            
+            /* Daftar (ul/li) mobile */
+            .info-list ul {
+                padding-left: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Biodata Developer</h1>
+        
+        <div class="developer-info">
+            
+            <h2>Informasi Dasar PPI</h2>
+            <div class="info-group">
+                <div class="info-item">
+                    <strong>Nama Lengkap:</strong> <span>Achmad Furqon Aditya Putra</span>
+                </div>
+                <div class="info-item">
+                    <strong>NRA:</strong> <span>2023.13.28.034</span>
+                </div>
+                <div class="info-item">
+                    <strong>Angkatan PPI:</strong> <span>2023</span>
+                </div>
+                <div class="info-item">
+                    <strong>Jabatan PPI Aktif:</strong> <span>KWH</span>
+                </div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #ddd; margin: 10px 0;">
+
+            <h2>Kontak & Media Sosial</h2>
+            <div class="info-group">
+                <div class="info-item">
+                    <strong>WhatsApp:</strong> <span class="value">
+                        <a href="https://wa.me/6285176871609" target="_blank">0851-7687-1609</a>
+                    </span>
+                </div>
+                <div class="info-item">
+                    <strong>Instagram:</strong> <span class="value">
+                         <a href="https://instagram.com/_.adityaptra" target="_blank">@_.adityaptra</a>
+                    </span>
+                </div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #ddd; margin: 10px 0;">
+
+            <h2>Organisasi & Pengalaman</h2>
+            <div class="info-list">
+                
+                <strong>Jabatan Organisasi Aktif:</strong>
+                <ul>
+                    <li>Vice President CLUB WIRAUSAHA UNUJA</li>
+                    <li>HEAD OF DEPARTMENT BEM Fakultas Teknik</li>
+                    <li>Speaker PMB UNUJA</li>
+                    <li>KWH PPI</li>
+                    <li>Cadreization HIMATIKA</li>
+                    <li>Media creative GYN</li>
+                </ul>
+
+                <strong>Pengalaman Organisasi:</strong>
+                <ul>
+                    <li>Ketua Angkatan Paskibraka (2023)</li>
+                    <li>Bidang Kepelatihan Kompas Matura (2023)</li>
+                    <li>Volunter Senyum Anak Nusantara (2025)</li>
+                    <li>Networking CLUB WIRAUSAHA UNUJA (2024)</li>
+                </ul>
+            </div>
+            
+            <hr style="border: 0; border-top: 1px solid #ddd; margin: 10px 0;">
+
+            <h2>Proyek yang Sudah Dikerjakan</h2>
+            <div class="info-list">
+                <ul>
+                    <li>Kasir Dinamis Antar Muka Dengan Admin</li>
+                    <li>Web PPI Roadshow</li>
+                    <li>Pembuatan Web Full Ormawa CLUB WIRAUSAHA UNUJA</li>
+                    <li>Pembuatan Web Rental HT Kraksaan</li>
+                </ul>
+            </div>
+
+
+            <hr style="border: 0; border-top: 1px dashed var(--color-accent); margin: 25px 0 10px 0;">
+            <p style="font-size: 0.9em; color: var(--color-accent); margin-top: 0; text-align: center;">
+                Website ini dikembangkan untuk mendukung kegiatan PPI Road to Show Goes to School.
+            </p>
+        </div>
+
+        <button class="back-button" onclick="window.location.href='index.html'">
+            Kembali ke Halaman Utama
+        </button>
+    </div>
+
+</body>
+</html>
