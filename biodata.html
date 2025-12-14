@@ -48,6 +48,18 @@ document.addEventListener("keydown", e => {
             text-align: center;
         }
         
+        /* --- CSS BARU UNTUK FOTO PROFIL --- */
+        .profile-photo {
+            width: 150px; /* Ukuran foto */
+            height: 150px;
+            border-radius: 50%; /* Membuat menjadi lingkaran */
+            object-fit: cover; /* Memastikan gambar mengisi area tanpa terdistorsi */
+            margin: -100px auto 30px; /* Jarak atas negatif untuk menjorok keluar dari card, auto untuk tengah */
+            display: block; /* Agar margin auto berfungsi */
+            border: 6px solid var(--color-card-bg); /* Border putih (background card) */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* Shadow agar menonjol */
+        }
+        
         /* Judul Utama */
         h1 { 
             color: var(--color-primary); 
@@ -55,6 +67,7 @@ document.addEventListener("keydown", e => {
             padding-bottom: 12px; 
             border-bottom: 5px solid var(--color-primary); 
             margin-bottom: 35px;
+            margin-top: 0; /* Mengatur ulang margin atas setelah foto */
             font-weight: 700;
         }
         
@@ -161,6 +174,15 @@ document.addEventListener("keydown", e => {
                 margin: 20px 10px;
                 padding: 20px 15px;
                 box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                /* Mengatur ulang margin top di mobile agar foto di tempat yang baik */
+                margin-top: 100px; 
+            }
+            /* Menyesuaikan posisi foto di mobile */
+            .profile-photo {
+                width: 120px; 
+                height: 120px;
+                margin: -90px auto 25px; 
+                border-width: 4px;
             }
             h1 { 
                 font-size: 1.8em;
@@ -204,11 +226,14 @@ document.addEventListener("keydown", e => {
 <body>
 
     <div class="container">
+        
+        <img src="Adit.jpg" alt="Foto" class="profile-photo">
+
         <h1>Biodata Developer</h1>
         
         <div class="developer-info">
             
-            <h2>Informasi Dasar PPI</h2>
+            <h2>Informasi Dasar</h2>
             <div class="info-group">
                 <div class="info-item">
                     <strong>Nama Lengkap:</strong> <span>Achmad Furqon Aditya Putra</span>
@@ -220,7 +245,7 @@ document.addEventListener("keydown", e => {
                     <strong>Angkatan PPI:</strong> <span>2023</span>
                 </div>
                 <div class="info-item">
-                    <strong>Jabatan PPI Aktif:</strong> <span>KWH</span>
+                    <strong>Jabatan Aktif:</strong> <span>KWH</span>
                 </div>
             </div>
 
@@ -269,10 +294,10 @@ document.addEventListener("keydown", e => {
             <h2>Proyek yang Sudah Dikerjakan</h2>
             <div class="info-list">
                 <ul>
-                    <li>Kasir Dinamis Antar Muka Dengan Admin</li>
-                    <li>Web PPI Roadshow</li>
-                    <li>Pembuatan Web Full Ormawa CLUB WIRAUSAHA UNUJA</li>
-                    <li>Pembuatan Web Rental HT Kraksaan</li>
+                    <li>Website Kasir Dinamis Antar Muka Dengan Admin</li>
+                    <li>Website PPI Roadshow</li>
+                    <li>Pembuatan Website Full Ormawa CLUB WIRAUSAHA UNUJA</li>
+                    <li>Pembuatan Website Rental HT Kraksaan</li>
                 </ul>
             </div>
 
@@ -290,3 +315,4 @@ document.addEventListener("keydown", e => {
 
 </body>
 </html>
+
