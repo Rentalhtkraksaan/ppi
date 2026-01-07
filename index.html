@@ -71,6 +71,13 @@
             color: var(--gold); font-size: 0.7em; animation: elegantPulse 3s infinite;
         }
 
+        .form-input {
+            width: 100%; padding: 15px; margin-bottom: 15px;
+            background: rgba(255,255,255,0.05); border: 1px solid #333;
+            border-radius: 12px; color: white; text-align: center; font-family: 'Poppins';
+        }
+        .form-input:focus { border-color: var(--gold); outline: none; }
+
         @keyframes elegantPulse {
             0%, 100% { opacity: 0.5; transform: scale(1); }
             50% { opacity: 1; transform: scale(1.02); }
@@ -84,6 +91,7 @@
         
         #closed-message { display: none; padding: 25px; border-radius: 20px; background: rgba(255, 65, 108, 0.1); border: 2px dashed var(--red); color: var(--red); margin-bottom: 20px; }
         #blocked-message { display: none; color: var(--red); padding: 40px 20px; }
+        #registration-area { display: none; }
     </style>
 </head>
 <body>
@@ -102,7 +110,21 @@
         <div id="blocked-message">
             <div style="font-size: 3em; margin-bottom: 20px;">🚫</div>
             <h2 style="letter-spacing: 2px;">AKSES DITOLAK</h2>
-            <p style="font-size: 0.8em; opacity: 0.7;">Perangkat Anda telah diblokir oleh Admin.</p>
+            <p style="font-size: 0.8em; opacity: 0.7;">Identitas/Perangkat Anda telah diblokir oleh Admin.</p>
+        </div>
+
+        <div id="registration-area">
+            <p style="font-size: 0.8em; color: var(--gold); margin-bottom: 20px; letter-spacing: 1px;">SILA VERIFIKASI IDENTITAS ANDA</p>
+            <form onsubmit="saveIdentity(event)">
+                <input type="text" id="reg-nama" class="form-input" placeholder="NAMA LENGKAP" required>
+                <input type="number" id="reg-angkatan" class="form-input" placeholder="ANGKATAN (CONTOH: 2024)" required>
+                <select id="reg-status" class="form-input" required>
+                    <option value="" disabled selected>PILIH STATUS</option>
+                    <option value="PENGURUS">PENGURUS</option>
+                    <option value="PPI">PPI</option>
+                </select>
+                <button type="submit" class="mode-button" style="background: var(--gold); color: #000; margin-top: 10px;">DAFTAR AKSES</button>
+            </form>
         </div>
 
         <div id="content-wrapper" style="display: none;">
@@ -110,12 +132,12 @@
                 <button onclick="handleUserAccess()" class="mode-button btn-user">RESULT PORTAL</button>
                 <button onclick="showLogin('admin')" class="mode-button btn-admin">ADMINISTRATOR</button>
                 <button onclick="showLogin('panitia')" class="mode-button btn-panitia">COMMITTEE ACCESS</button>
-                </div>
+            </div>
         </div>
 
         <div id="closed-message">
             <div style="font-weight: 600; font-size: 1.2em;">PORTAL CLOSED</div>
-            <div style="font-size: 0.7em; opacity: 0.8; mt: 5px;">Akses ditutup sementara.</div>
+            <div style="font-size: 0.7em; opacity: 0.8; margin-top: 5px;">Akses ditutup.</div>
         </div>
 
         <button id="developer-button" onclick="logAction('DEV_PORTAL', 'biodata.html')" class="mode-button btn-dev" style="display: none;">
@@ -148,23 +170,61 @@
         firebase.initializeApp(FIREBASE_CONFIG);
         const database = firebase.database();
         
-        const ADMIN_PASSWORD = "aditanakcakep"; 
+        const ADMIN_PASSWORD = "ppiadminku01"; 
         const PANITIA_PASSWORD = "ppipanitia";
 
-        function startSecurityMonitor() {
-            const userAgent = navigator.userAgent;
+        // Jantung Logika: Cek apakah user valid atau sudah dihapus Admin
+        async function checkIdentityAndSync() {
+            const savedName = localStorage.getItem('ppi_nama');
+            if (!savedName) {
+                document.getElementById('loading-initial').style.display = 'none';
+                document.getElementById('registration-area').style.display = 'block';
+                return;
+            }
+
+            const myFingerprint = savedName + "_" + navigator.userAgent.slice(-15);
+            
+            // Cek apakah data log masih ada di Firebase
+            database.ref('developer_clicks').orderByChild('user_id').equalTo(myFingerprint).once('value', (snapshot) => {
+                if (!snapshot.exists()) {
+                    // Jika data log tidak ada (berarti dihapus Admin di kepo.html)
+                    localStorage.clear();
+                    alert("Sesi Anda berakhir. Silahkan isi ulang identitas.");
+                    location.reload();
+                } else {
+                    startSecurityMonitor(myFingerprint);
+                }
+            });
+        }
+
+        async function saveIdentity(e) {
+            e.preventDefault();
+            const nama = document.getElementById('reg-nama').value;
+            const angkatan = document.getElementById('reg-angkatan').value;
+            const status = document.getElementById('reg-status').value;
+            
+            localStorage.setItem('ppi_nama', nama);
+            localStorage.setItem('ppi_angkatan', angkatan);
+            localStorage.setItem('ppi_status', status);
+            
+            // Kirim log pertama kali agar terdaftar di sistem kepo.html
+            await logAction('DAFTAR_PERTAMA', null);
+            location.reload();
+        }
+
+        function startSecurityMonitor(fingerprint) {
             database.ref('blacklist').on('value', (snapshot) => {
-                const isBlocked = Object.values(snapshot.val() || {}).includes(userAgent);
+                const blacklist = Object.values(snapshot.val() || {});
+                const isBlocked = blacklist.includes(fingerprint);
+                
                 if (isBlocked) {
                     document.getElementById('loading-initial').style.display = 'none';
                     document.getElementById('content-wrapper').style.display = 'none';
                     document.getElementById('closed-message').style.display = 'none';
-                    document.getElementById('developer-button').style.display = 'none';
+                    document.getElementById('registration-area').style.display = 'none';
                     document.getElementById('blocked-message').style.display = 'block';
                     document.getElementById('main-title').style.display = 'none';
                 } else {
-                    document.getElementById('blocked-message').style.display = 'none';
-                    document.getElementById('main-title').style.display = 'block';
                     checkPortalStatus();
                 }
             });
@@ -176,38 +236,32 @@
                 const contentWrapper = document.getElementById('content-wrapper');
                 const closedMessage = document.getElementById('closed-message');
                 const devButton = document.getElementById('developer-button');
-                const menuGrid = document.getElementById('menu-grid');
-                const container = document.getElementById('main-container');
-
+                
                 document.getElementById('loading-initial').style.display = 'none';
-                devButton.style.display = 'block'; // Selalu tampilkan tombol dev
+                document.getElementById('registration-area').style.display = 'none';
+                devButton.style.display = 'block'; 
 
                 if (status === 'on') {
                     contentWrapper.style.display = 'block';
                     closedMessage.style.display = 'none';
-                    menuGrid.appendChild(devButton); // Masukkan ke dalam grid menu
                 } else {
                     contentWrapper.style.display = 'none';
                     closedMessage.style.display = 'block';
-                    container.appendChild(devButton); // Pindahkan ke paling bawah kontainer (di luar tabel closed)
                 }
             });
         }
 
-        document.addEventListener('DOMContentLoaded', startSecurityMonitor);
-
-        function showLogin(role) {
-            document.getElementById('login-modal').style.display = 'flex';
-            document.getElementById('role-input').value = role;
-            document.getElementById('login-title').textContent = role.toUpperCase() + ' ACCESS';
-        }
-        function hideLogin() { document.getElementById('login-modal').style.display = 'none'; }
-
         async function logAction(label, redirectUrl) {
             try {
                 const sekarang = new Date();
+                const nama = localStorage.getItem('ppi_nama') || 'Anonim';
+                const info = (localStorage.getItem('ppi_status') || '-') + " (" + (localStorage.getItem('ppi_angkatan') || '-') + ")";
+                const fingerprint = nama + "_" + navigator.userAgent.slice(-15);
+
                 const dataLog = {
-                    timestamp: Date.now(),
+                    user_id: fingerprint,
+                    nama: nama,
+                    info_tambahan: info,
                     perangkat: navigator.userAgent,
                     hari: ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"][sekarang.getDay()],
                     tanggal: sekarang.toLocaleDateString('id-ID'),
@@ -215,11 +269,18 @@
                     tipe_akses: label
                 };
                 await database.ref('developer_clicks').push(dataLog);
-                await database.ref('developer_clicks_count').transaction(c => (c || 0) + 1);
             } catch (err) { console.error(err); }
             finally { if (redirectUrl) window.location.href = redirectUrl; }
         }
 
+        document.addEventListener('DOMContentLoaded', checkIdentityAndSync);
+
+        function showLogin(role) {
+            document.getElementById('login-modal').style.display = 'flex';
+            document.getElementById('role-input').value = role;
+            document.getElementById('login-title').textContent = role.toUpperCase() + ' ACCESS';
+        }
+        function hideLogin() { document.getElementById('login-modal').style.display = 'none'; }
         async function handleUserAccess() { await logAction('USER_ACCESS', 'user.html'); }
 
         async function handleLogin(event) {
@@ -227,8 +288,6 @@
             const pass = document.getElementById('password-input').value;
             const role = document.getElementById('role-input').value;
             if (pass === (role === 'admin' ? ADMIN_PASSWORD : PANITIA_PASSWORD)) {
-                localStorage.setItem('role', role);
-                localStorage.setItem('loggedIn', 'true');
                 await logAction(role.toUpperCase() + '_LOGIN', role + '.html');
             } else { alert("PASSKEY SALAH"); }
         }
