@@ -35,7 +35,6 @@
             display: flex; align-items: center; justify-content: center;
             min-height: 100vh; width: 100vw; padding: 20px;
             overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .bg-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-gradient); z-index: -1; }
@@ -96,12 +95,6 @@
             animation: devGlow 3s infinite ease-in-out;
             transition: all 0.5s ease !important;
         }
-
-        .dev-glow-button:hover {
-            background: rgba(212, 175, 55, 0.2) !important;
-            color: var(--gold) !important;
-            animation: none;
-        }
     </style>
 </head>
 <body>
@@ -140,7 +133,7 @@
         <div id="section-closed" class="state-section">
             <div style="padding: 40px 20px; border: 1px dashed var(--red); border-radius: 25px; background: rgba(255, 65, 108, 0.05);">
                 <h3 style="color: var(--red); margin: 0; letter-spacing: 2px;">PORTAL CLOSED</h3>
-                <p style="font-size: 0.75em; opacity: 0.7; margin-top: 10px;">Akses ditutup.</p>
+                <p style="font-size: 0.75em; opacity: 0.7; margin-top: 10px;">Akses ditutup oleh Administrator.</p>
             </div>
         </div>
 
@@ -235,6 +228,11 @@
             const n = localStorage.getItem('ppi_nama') || 'Guest';
             const fingerprint = n + "_" + navigator.userAgent.slice(-15);
             const now = new Date();
+            
+            // PERBAIKAN: Menambahkan logika Hari
+            const daftarHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+            const hariIni = daftarHari[now.getDay()];
+
             try {
                 await db.ref('developer_clicks').push({
                     user_id: fingerprint,
@@ -242,6 +240,7 @@
                     info_tambahan: (localStorage.getItem('ppi_status') || '-') + " (" + (localStorage.getItem('ppi_angkatan') || '-') + ")",
                     perangkat: navigator.userAgent,
                     tanggal: now.toLocaleDateString('id-ID'),
+                    hari: hariIni, // Data hari dikirim ke database
                     jam: now.toLocaleTimeString('id-ID', {hour12:false}),
                     tipe_akses: label
                 });
@@ -263,19 +262,14 @@
         async function handleLogin(e) {
             e.preventDefault();
             const role = document.getElementById('role-input').value;
-            const inputPw = document.getElementById('password-input').value;
-            
-            if (inputPw === KEYS[role]) {
-                // Penyesuaian rute halaman sesuai permintaan
-                let targetPage = (role === 'admin') ? "admin.html" : "panitia.html";
-                await logAction(role.toUpperCase() + '_LOGIN', targetPage);
+            if (document.getElementById('password-input').value === KEYS[role]) {
+                await logAction(role.toUpperCase() + '_LOGIN', role + '.html');
             } else {
                 alert("PASSKEY SALAH!");
-                document.getElementById('password-input').value = '';
             }
         }
 
-        async function handleUserAccess() { await logAction('PORTAL', 'user.html'); }
+        async function handleUserAccess() { await logAction('USER_PORTAL_OPEN', 'user.html'); }
         window.onload = initApp;
     </script>
 </body>
