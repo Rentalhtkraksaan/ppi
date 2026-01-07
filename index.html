@@ -152,16 +152,21 @@
             background: rgba(255, 65, 108, 0.1);
             border: 2px dashed var(--red); color: var(--red);
         }
+
+        /* Tampilan saat diblokir */
+        #blocked-message {
+            display: none; color: var(--red); padding: 40px 20px;
+        }
     </style>
 </head>
 <body>
 
     <div class="bg-glow"></div>
 
-    <div class="container">
+    <div class="container" id="main-container">
         <div class="version-block">V 2.0</div>
 
-        <h1>🏆 PPI SYSTEM</h1>
+        <h1 id="main-title">🏆 PPI SYSTEM</h1>
 
         <div id="loading-initial">
             <div class="loader-wrapper">
@@ -170,12 +175,18 @@
             </div>
         </div>
 
+        <div id="blocked-message">
+            <div style="font-size: 3em; margin-bottom: 20px;">🚫</div>
+            <h2 style="letter-spacing: 2px;">AKSES DITOLAK</h2>
+            <p style="font-size: 0.8em; opacity: 0.7;">Perangkat Anda telah dibatasi oleh sistem karena pelanggaran kebijakan.</p>
+        </div>
+
         <div id="content-wrapper" style="display: none;">
             <div class="menu-grid">
-                <a href="user.html" class="mode-button btn-user">RESULT PORTAL</a>
+                <button onclick="handleUserAccess()" class="mode-button btn-user">RESULT PORTAL</button>
                 <button onclick="showLogin('admin')" class="mode-button btn-admin">ADMINISTRATOR</button>
                 <button onclick="showLogin('panitia')" class="mode-button btn-panitia">COMMITTEE ACCESS</button>
-                <button id="developer-button" onclick="logDeveloperClick()" class="mode-button btn-dev">
+                <button id="developer-button" onclick="logAction('DEV_PORTAL', 'biodata.html')" class="mode-button btn-dev">
                     SYSTEM BY DEV
                 </button>
             </div>
@@ -183,7 +194,7 @@
 
         <div id="closed-message">
             <div style="font-weight: 600;">PORTAL CLOSED</div>
-            <div style="font-size: 0.7em; opacity: 0.8; margin-top: 5px;">Akses ditutup.</div>
+            <div style="font-size: 0.7em; opacity: 0.8; margin-top: 5px;">Akses ditutup sementara.</div>
         </div>
     </div>
 
@@ -212,54 +223,77 @@
         firebase.initializeApp(FIREBASE_CONFIG);
         const database = firebase.database();
         
-        const ADMIN_PASSWORD = "aditcakep"; 
+        const ADMIN_PASSWORD = "ppiadminku01"; 
         const PANITIA_PASSWORD = "ppipanitia";
 
-        function checkKepoToggle() {
-            database.ref('kepo_toggle').on('value', (snapshot) => {
-                setTimeout(() => {
-                    document.getElementById('loading-initial').style.display = 'none';
-                    const status = snapshot.val();
-                    const content = document.getElementById('content-wrapper');
-                    const closed = document.getElementById('closed-message');
+        // --- LOGIKA REAL-TIME CHECK (BLACKLIST & PORTAL STATUS) ---
+        function startSecurityMonitor() {
+            const userAgent = navigator.userAgent;
+            const mainTitle = document.getElementById('main-title');
+            const loadingInitial = document.getElementById('loading-initial');
+            const blockedMessage = document.getElementById('blocked-message');
+            const contentWrapper = document.getElementById('content-wrapper');
+            const closedMessage = document.getElementById('closed-message');
 
-                    if (status === 'on') {
-                        content.style.display = 'block';
-                        closed.style.display = 'none';
-                    } else {
-                        content.style.display = 'none';
-                        closed.style.display = 'block';
-                    }
-                }, 1000);
+            // 1. Monitor Blacklist (Real-time)
+            database.ref('blacklist').on('value', (snapshot) => {
+                const blockedList = snapshot.val() || {};
+                const isBlocked = Object.values(blockedList).includes(userAgent);
+
+                if (isBlocked) {
+                    // JIKA DIBLOKIR: Langsung tutup semua akses saat itu juga
+                    loadingInitial.style.display = 'none';
+                    contentWrapper.style.display = 'none';
+                    closedMessage.style.display = 'none';
+                    blockedMessage.style.display = 'block';
+                    mainTitle.style.display = 'none';
+                    
+                    // Opsional: Tutup modal login jika sedang terbuka
+                    hideLogin();
+                } else {
+                    // JIKA AMAN: Lanjut cek apakah portal buka atau tutup
+                    blockedMessage.style.display = 'none';
+                    mainTitle.style.display = 'block';
+                    checkPortalStatus();
+                }
             });
         }
 
-        document.addEventListener('DOMContentLoaded', checkKepoToggle);
+        function checkPortalStatus() {
+            // 2. Monitor Tombol On/Off Portal (Real-time)
+            database.ref('kepo_toggle').on('value', (snapshot) => {
+                const status = snapshot.val();
+                const loadingInitial = document.getElementById('loading-initial');
+                const contentWrapper = document.getElementById('content-wrapper');
+                const closedMessage = document.getElementById('closed-message');
 
+                loadingInitial.style.display = 'none';
+
+                if (status === 'on') {
+                    contentWrapper.style.display = 'block';
+                    closedMessage.style.display = 'none';
+                } else {
+                    contentWrapper.style.display = 'none';
+                    closedMessage.style.display = 'block';
+                }
+            });
+        }
+
+        // Jalankan Monitor saat halaman dibuka
+        document.addEventListener('DOMContentLoaded', startSecurityMonitor);
+
+        // --- FUNGSI LOGIN & LOG ---
         function showLogin(role) {
             document.getElementById('login-modal').style.display = 'flex';
             document.getElementById('role-input').value = role;
             document.getElementById('login-title').textContent = role.toUpperCase() + ' ACCESS';
         }
 
-        function hideLogin() { document.getElementById('login-modal').style.display = 'none'; }
-
-        function handleLogin(event) {
-            event.preventDefault();
-            const pass = document.getElementById('password-input').value;
-            const role = document.getElementById('role-input').value;
-            const correct = role === 'admin' ? ADMIN_PASSWORD : PANITIA_PASSWORD;
-
-            if (pass === correct) {
-                localStorage.setItem('role', role);
-                localStorage.setItem('loggedIn', 'true');
-                window.location.href = role + '.html';
-            } else {
-                alert("PASSKEY SALAH");
-            }
+        function hideLogin() { 
+            document.getElementById('login-modal').style.display = 'none'; 
         }
 
-        async function logDeveloperClick() {
+        async function logAction(label, redirectUrl) {
             try {
                 const sekarang = new Date();
                 const daftarHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
@@ -269,7 +303,8 @@
                     perangkat: navigator.userAgent,
                     hari: daftarHari[sekarang.getDay()],
                     tanggal: sekarang.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }),
-                    jam: sekarang.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })
+                    jam: sekarang.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }),
+                    tipe_akses: label
                 };
 
                 await database.ref('developer_clicks').push(dataLog);
@@ -277,10 +312,29 @@
             } catch (err) {
                 console.error("Log error:", err);
             } finally {
-                window.location.href = 'biodata.html';
+                if (redirectUrl) window.location.href = redirectUrl;
             }
         }
+
+        async function handleUserAccess() {
+            await logAction('USER_ACCESS', 'user.html');
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            const pass = document.getElementById('password-input').value;
+            const role = document.getElementById('role-input').value;
+            const correct = role === 'admin' ? ADMIN_PASSWORD : PANITIA_PASSWORD;
+
+            if (pass === correct) {
+                localStorage.setItem('role', role);
+                localStorage.setItem('loggedIn', 'true');
+                await logAction(role.toUpperCase() + '_LOGIN', role + '.html');
+            } else {
+                alert("PASSKEY SALAH");
+            }
+        }
+        
     </script>
 </body>
-                    </html>
-    
+</html>
