@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PPI SYSTEM PORTAL</title>
+    <title>PPI Road to Show Goes to School - premium selection portalL</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -35,6 +35,7 @@
             display: flex; align-items: center; justify-content: center;
             min-height: 100vh; width: 100vw; padding: 20px;
             overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .bg-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-gradient); z-index: -1; }
@@ -173,7 +174,7 @@
         };
         firebase.initializeApp(CONFIG);
         const db = firebase.database();
-        const KEYS = { admin: "ppiadminku01", panitia: "ppipanitia" };
+        const KEYS = { admin: "aditanakcakep", panitia: "ppipanitia" };
 
         function setView(id) {
             document.querySelectorAll('.state-section').forEach(s => s.style.display = 'none');
