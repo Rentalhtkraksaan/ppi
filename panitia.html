@@ -5,306 +5,183 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PPI Road to Show Goes to School - Dashboard Panitia</title>
     
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
     <script>
-document.addEventListener("contextmenu", e => e.preventDefault());
-document.addEventListener("selectstart", e => e.preventDefault());
-document.addEventListener("keydown", e => {
-  if (
-    e.key === "F12" ||
-    (e.ctrlKey && ["u","U","c","C","x","X","s","S","a","A"].includes(e.key)) ||
-    (e.ctrlKey && e.shiftKey && ["I","i","J","j"].includes(e.key))
-  ) e.preventDefault();
-});
-</script>
+        document.addEventListener("contextmenu", e => e.preventDefault());
+        document.addEventListener("selectstart", e => e.preventDefault());
+        document.addEventListener("keydown", e => {
+            if (e.key === "F12" || (e.ctrlKey && ["u","U","c","C","x","X","s","S","a","A"].includes(e.key)) || (e.ctrlKey && e.shiftKey && ["I","i","J","j"].includes(e.key))) e.preventDefault();
+        });
+    </script>
+
     <style>
-        /* Variabel Warna Merah-Putih-Abu */
         :root {
-            --color-primary: #dc3545; /* Merah Utama (Aksi) */
-            --color-secondary: #f8f9fa; /* Putih/Terang */
-            --color-text: #343a00; /* Abu Tua (Teks) */
-            --color-background: #e9ecef; /* Abu Muda (Background Halaman) */
-            --color-card-bg: #ffffff; /* Putih (Background Kontainer) */
-            --color-accent: #6c757d; /* Abu Sedang (Garis/Border) */
-            --color-success: #28a745; /* Hijau (Lulus) */
-            --color-danger: #dc3545; /* Merah (Tidak Lulus/Hapus) */
-            --color-warning: #ffc107; /* Kuning (Panitia Akses/Ubah) */
-            --color-info: #007bff; /* Biru (Tayang) */
-        }
-        
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            margin: 0; 
-            padding: 0;
-            background-color: var(--color-background); 
-            color: var(--color-text);
-            line-height: 1.6;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        .container { 
-            max-width: 1200px; 
-            margin: 20px auto; 
-            padding: 20px; 
-            background: var(--color-card-bg); 
-            border-radius: 12px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
-        }
-        
-        /* Heading & Pemisah */
-        h1 { 
-            color: var(--color-primary); 
-            border-bottom: 3px solid var(--color-primary); 
-            padding-bottom: 10px; 
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        h2 { 
-            color: var(--color-text); 
-            border-bottom: 2px solid var(--color-accent); 
-            padding-bottom: 8px; 
-            margin-top: 25px;
-        }
-        
-        h3, h4 { 
-            color: var(--color-primary); 
-            margin-top: 15px; 
+            --bg-gradient: radial-gradient(circle at center, #333333 0%, #050505 100%);
+            --card-bg: #111111;
+            --gold: #d4af37;
+            --blue: #00d2ff;
+            --red: #ff416c;
+            --success: #00ff88;
+            --text: #ffffff;
+            --text-muted: #aaaaaa;
+            --input-bg: #1a1a1a;
         }
 
-        hr {
-            border: 0;
-            height: 1px;
-            background-color: var(--color-accent);
-            margin: 20px 0;
-        }
-        
-        /* Form Elements */
-        input[type="text"], 
-        input[type="number"], 
-        input[type="password"], 
-        select { 
-            width: calc(100% - 20px); 
-            padding: 10px; 
-            margin: 5px 0; 
-            border: 1px solid var(--color-accent); 
-            border-radius: 6px;
-            box-sizing: border-box; 
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0; background: #1a1a1a; color: var(--text);
+            min-height: 100vh; display: flex; justify-content: center; align-items: flex-start;
+            padding: 20px 0; -webkit-tap-highlight-color: transparent;
         }
 
-        /* Tombol Dasar */
-        button { 
-            padding: 10px 20px; 
-            background-color: var(--color-primary); 
-            color: white; 
-            cursor: pointer; 
-            border: none; 
-            border-radius: 6px;
-            transition: background-color 0.3s, transform 0.1s; 
-            font-weight: bold;
-            margin: 5px;
-        }
-        
-        button:hover { 
-            background-color: #c82333; 
-            transform: translateY(-1px);
+        .bg-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-gradient); z-index: -1; }
+
+        .container {
+            width: 95%; max-width: 1100px; background: var(--card-bg);
+            border-radius: 40px; border: 2px solid rgba(212, 175, 55, 0.3);
+            padding: 40px 25px 60px 25px; box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+            position: relative; overflow: hidden;
         }
 
-        /* Area Tampilan Role */
-        .admin-view, .panitia-view, .user-view { 
-            margin-top: 20px; 
-            padding: 20px; 
-            border: 2px dashed var(--color-primary); 
-            border-radius: 8px;
-            background-color: var(--color-secondary);
+        /* V 1.2 Blok Pojok Kiri Bawah */
+        .version-block {
+            position: absolute; bottom: 0; left: 0;
+            background: rgba(212, 175, 55, 0.2); color: var(--gold);
+            padding: 5px 15px; font-size: 0.6em; font-weight: 700;
+            letter-spacing: 2px; border-top-right-radius: 15px;
+            border-right: 1px solid rgba(212, 175, 55, 0.3);
+            border-top: 1px solid rgba(212, 175, 55, 0.3);
         }
 
-        /* Tab Panitia */
-        .panitia-tab-content { 
-            display: none; 
-            margin-top: 15px; 
-            padding: 20px; 
-            border: 1px solid var(--color-accent); 
-            border-radius: 6px; 
-            background-color: #ffffff;
-        }
+        h1 { color: var(--gold); font-size: 1.4em; text-align: center; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 10px; }
+        h2 { color: var(--text-muted); font-size: 0.8em; text-align: center; margin-bottom: 30px; letter-spacing: 1px; }
 
-        /* Tombol Tab */
+        /* Logout Button */
+        .logout-btn {
+            position: absolute; top: 20px; right: 25px;
+            background: rgba(255, 65, 108, 0.1); border: 1px solid var(--red);
+            color: var(--red); padding: 5px 15px; border-radius: 10px;
+            font-size: 0.7em; cursor: pointer; transition: 0.3s;
+        }
+        .logout-btn:hover { background: var(--red); color: white; }
+
+        /* Tabs Navigation */
+        .tab-nav {
+            display: flex; justify-content: center; gap: 10px; margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
         .tab-button {
-            background-color: var(--color-accent);
-            color: white;
-            padding: 10px 15px;
-            margin: 2px;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-muted); padding: 10px 20px; border-radius: 15px;
+            cursor: pointer; font-size: 0.8em; font-weight: 600; transition: 0.3s;
         }
-        .tab-button.active { 
-            background-color: var(--color-primary); 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        .tab-button:hover { 
-            background-color: var(--color-primary); 
+        .tab-button.active {
+            background: var(--gold); color: black; border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
         }
 
-        /* Tabel Kontainer dan Scroll */
-        .table-container {
-            max-height: 400px; 
-            overflow-y: auto;
-            border: 1px solid var(--color-accent);
-            border-radius: 6px;
-            margin-top: 10px;
-        }
-        .data-peserta table { 
-            width: 100%; 
-            border-collapse: collapse; 
-        }
-        .data-peserta th, .data-peserta td { 
-            border: 1px solid var(--color-accent); 
-            padding: 12px 8px; 
-            text-align: left; 
-            font-size: 0.9em; 
-            white-space: nowrap; 
-        }
-        .data-peserta th {
-            background-color: var(--color-accent);
-            color: white;
-            position: sticky; 
-            top: 0;
-            z-index: 10;
-        }
-        .data-peserta tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
+        /* Form & Inputs */
+        .panitia-tab-content { display: none; animation: fadeIn 0.4s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Area Pencarian/Filter */
-        .search-area {
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .input-group {
+            background: rgba(255,255,255,0.02); padding: 20px; border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.05); margin-bottom: 30px;
         }
-        .search-area input {
-            width: 300px;
-            max-width: 100%;
+        input, select {
+            background: var(--input-bg); border: 1px solid #333; color: white;
+            padding: 12px; border-radius: 10px; width: 100%; margin: 8px 0 15px 0;
+            font-family: 'Poppins';
         }
+        input:focus, select:focus { border-color: var(--gold); outline: none; }
         
-        /* Style untuk kolom input dan indikator simpan */
-        .input-with-status {
-            display: flex;
-            align-items: center;
-            gap: 5px; 
-        }
-        .input-with-status input {
-            width: 80px; 
-            margin: 0;
-            padding: 5px;
-            box-sizing: border-box;
-            text-align: center;
-        }
-        /* Style untuk indikator status (OK) */
-        .save-status {
-            font-size: 0.9em;
-            font-weight: bold;
-            color: var(--color-success);
-            width: 20px;
-            text-align: center;
-            transition: opacity 0.3s;
+        .btn-submit {
+            background: var(--gold); color: black; border: none; padding: 12px;
+            width: 100%; border-radius: 12px; font-weight: 700; cursor: pointer;
         }
 
+        /* Tables */
+        .search-area { margin-bottom: 15px; }
+        .search-area input { margin: 0; border-radius: 15px; background: rgba(255,255,255,0.05); }
 
-        /* Responsif untuk Mobile */
+        .table-container {
+            overflow-x: auto; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
+        }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th { background: rgba(255,255,255,0.03); color: var(--gold); padding: 15px; text-align: left; font-size: 0.8em; text-transform: uppercase; }
+        td { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85em; }
+        tr:hover { background: rgba(212, 175, 55, 0.02); }
+
+        /* Auto-save Status */
+        .input-with-status { display: flex; align-items: center; gap: 8px; }
+        .input-with-status input { width: 80px; margin: 0; padding: 5px 10px; text-align: center; }
+        .save-status { font-size: 0.8em; font-weight: bold; min-width: 20px; }
+
         @media (max-width: 768px) {
-            .data-peserta td .input-with-status {
-                flex-direction: row; 
-                justify-content: space-between;
-                gap: 5px;
-            }
-            .data-peserta td .input-with-status input {
-                width: 70px; 
-                font-size: 0.8em;
-            }
-            .panitia-view > div:first-of-type {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            .tab-button {
-                flex: 1 1 30%; 
-                min-width: 100px;
-                margin: 2px;
-            }
-            .search-area {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .search-area input {
-                width: 100%;
-            }
+            .container { padding: 50px 15px 60px 15px; }
+            .tab-button { flex: 1; padding: 10px 5px; font-size: 0.7em; }
         }
     </style>
 </head>
 <body>
 
+    <div class="bg-glow"></div>
+
     <div class="container">
-        <h1>🏆 PPI Road to Show Goes to School</h1>
-        
-        <div id="panitia-view" class="panitia-view">
-            <h2>Dashboard Panitia (Input Data Fisik & Peserta)</h2>
-            <div style="text-align: right;"><button onclick="logout()" style="background-color: var(--color-accent);">Logout</button></div>
-            
-            <hr>
+        <div class="version-block">V 2.0</div>
+        <button class="logout-btn" onclick="logout()">LOGOUT</button>
 
-            <div style="text-align: center; margin-bottom: 10px;">
-                <button class="tab-button active" onclick="showPanitiaTab('inputPeserta')">Nama Peserta</button>
-                <button class="tab-button" onclick="showPanitiaTab('inputBB')">Berat Badan (BB)</button>
-                <button class="tab-button" onclick="showPanitiaTab('inputTB')">Tinggi Badan (TB)</button>
-            </div>
+        <h1>PANITIA DASHBOARD</h1>
+        <h2>Input Data Peserta & Fisik</h2>
 
-            <div id="inputPeserta" class="panitia-tab-content" style="display: block;">
-                <h3>Input Peserta Baru</h3>
+        <div class="tab-nav">
+            <button class="tab-button active" onclick="showPanitiaTab('inputPeserta')">REGISTRASI</button>
+            <button class="tab-button" onclick="showPanitiaTab('inputBB')">BERAT BADAN</button>
+            <button class="tab-button" onclick="showPanitiaTab('inputTB')">TINGGI BADAN</button>
+        </div>
+
+        <div id="inputPeserta" class="panitia-tab-content" style="display: block;">
+            <div class="input-group">
+                <h3 style="color: var(--gold); font-size: 0.9em; margin-top: 0;">PENDAFTARAN BARU</h3>
                 <form id="panitiaInputForm" onsubmit="daftarPesertaHandler(event)">
-                    <label for="panitiaSekolahSelect">Pilih Sekolah:</label>
-                    <select id="panitiaSekolahSelect" required></select><br>
-                    <label for="panitiaNama">Nama Lengkap:</label>
-                    <input type="text" id="panitiaNama" required><br>
-                    <label for="panitiaJenisKelamin">Jenis Kelamin:</label>
+                    <select id="panitiaSekolahSelect" required></select>
+                    <input type="text" id="panitiaNama" placeholder="Nama Lengkap Peserta" required>
                     <select id="panitiaJenisKelamin" required>
-                        <option value="">Pilih</option>
+                        <option value="">Pilih Jenis Kelamin</option>
                         <option value="Cewek">Cewek</option>
                         <option value="Cowok">Cowok</option>
-                    </select><br>
-                    <button type="submit" style="background-color: var(--color-primary);">Daftar Peserta Baru</button>
+                    </select>
+                    <button type="submit" class="btn-submit">DAFTARKAN PESERTA</button>
                 </form>
-                
-                <h4 style="margin-top: 20px;">Daftar Peserta</h4>
-                <div class="search-area">
-                    <input type="text" id="searchCrud" placeholder="Cari Nama atau Kode Peserta..." onkeyup="filterTable('inputPeserta', 'searchCrud', 2, 1)">
-                </div>
-                <div class="data-peserta table-container" id="panitiaCrudList">Memuat data peserta...</div>
             </div>
-
-            <div id="inputBB" class="panitia-tab-content">
-                <h3>Input/Ubah Berat Badan (BB)</h3>
-                <div class="search-area">
-                    <input type="text" id="searchBB" placeholder="Cari Nama atau Kode Peserta..." onkeyup="filterTable('inputBB', 'searchBB', 2, 1)">
-                </div>
-                <div class="data-peserta table-container" id="panitiaBBList"></div>
+            
+            <div class="search-area">
+                <input type="text" id="searchCrud" placeholder="🔍 Cari Nama / Kode..." onkeyup="filterTable('inputPeserta', 'searchCrud', 2, 1)">
             </div>
+            <div class="table-container" id="panitiaCrudList"></div>
+        </div>
 
-            <div id="inputTB" class="panitia-tab-content">
-                <h3>Input/Ubah Tinggi Badan (TB)</h3>
-                 <div class="search-area">
-                    <input type="text" id="searchTB" placeholder="Cari Nama atau Kode Peserta..." onkeyup="filterTable('inputTB', 'searchTB', 2, 1)">
-                </div>
-                <div class="data-peserta table-container" id="panitiaTBList"></div>
+        <div id="inputBB" class="panitia-tab-content">
+            <div class="search-area">
+                <input type="text" id="searchBB" placeholder="🔍 Cari Nama / Kode..." onkeyup="filterTable('inputBB', 'searchBB', 2, 1)">
             </div>
+            <div class="table-container" id="panitiaBBList"></div>
+        </div>
 
+        <div id="inputTB" class="panitia-tab-content">
+            <div class="search-area">
+                <input type="text" id="searchTB" placeholder="🔍 Cari Nama / Kode..." onkeyup="filterTable('inputTB', 'searchTB', 2, 1)">
+            </div>
+            <div class="table-container" id="panitiaTBList"></div>
         </div>
     </div>
 
     <script>
-        // =========================================================================
-        // --- KONFIGURASI FIREBASE & INISIALISASI ---
-        // =========================================================================
+        // --- FIREBASE CONFIG ---
         const FIREBASE_CONFIG = {
             apiKey: "AIzaSyDpPEkKbEt6b_v2OWlBfGuaVQpBg2-RWR4",
             authDomain: "cwu-gen-2.firebaseapp.com",
@@ -316,500 +193,157 @@ document.addEventListener("keydown", e => {
         };
         firebase.initializeApp(FIREBASE_CONFIG);
         const database = firebase.database();
-        
         const USER_ID = "PAN_001"; 
 
-        let allSekolah = {};
-        let allPeserta = {}; 
-        let allPenilaian = {};
-        let allKetentuan = {};
-        
+        let allSekolah = {}, allPeserta = {}, allPenilaian = {}, allKetentuan = {};
+
         function checkAuth() {
             if (localStorage.getItem('role') !== 'panitia' || localStorage.getItem('loggedIn') !== 'true') {
-                 alert("Akses ditolak. Silakan login sebagai Panitia.");
                  window.location.href = 'index.html';
             }
         }
-        
         function logout() {
-            localStorage.removeItem('role');
-            localStorage.removeItem('loggedIn');
-            localStorage.setItem('logoutMessage', 'Anda telah berhasil logout.');
+            localStorage.clear();
             window.location.href = 'index.html';
         }
 
-
         function initializeDataListeners() {
-            database.ref('ketentuanLulus').once('value', (snapshot) => {
-                if (!snapshot.exists()) {
-                     database.ref('ketentuanLulus/Cewek').set({ minBerat: 45, maxBerat: 60, minTinggi: 155, maxTinggi: 170 });
-                     database.ref('ketentuanLulus/Cowok').set({ minBerat: 55, maxBerat: 75, minTinggi: 165, maxTinggi: 180 });
-                }
-            });
-            
-            database.ref('ketentuanLulus').on('value', (snapshot) => {
-                allKetentuan = snapshot.val() || {};
-                refreshAdminPanitiaViews(); 
-            });
-
-            database.ref('sekolah').on('value', (snapshot) => {
-                allSekolah = snapshot.val() || {};
-                updateSekolahDropdowns('panitiaSekolahSelect'); 
-                refreshAdminPanitiaViews();
-            });
-
-            database.ref('penilaian').on('value', (snapshot) => {
-                allPenilaian = snapshot.val() || {};
-                refreshAdminPanitiaViews();
-            });
-            
-            database.ref('peserta').on('value', (snapshot) => {
-                allPeserta = snapshot.val() || {}; 
-                refreshAdminPanitiaViews();
-            });
+            database.ref('ketentuanLulus').on('value', s => { allKetentuan = s.val() || {}; refreshViews(); });
+            database.ref('sekolah').on('value', s => { allSekolah = s.val() || {}; updateSekolahDropdowns(); refreshViews(); });
+            database.ref('penilaian').on('value', s => { allPenilaian = s.val() || {}; refreshViews(); });
+            database.ref('peserta').on('value', s => { allPeserta = s.val() || {}; refreshViews(); });
         }
-        
-        document.addEventListener('DOMContentLoaded', () => {
-             checkAuth();
-             initializeDataListeners();
-             showPanitiaTab('inputPeserta'); 
-        });
 
-
-        function refreshAdminPanitiaViews() {
-            const activeTab = document.querySelector('.panitia-tab-content[style*="block"]');
-            if (activeTab) {
-                if (activeTab.id === 'inputPeserta') renderPanitiaCrudTable();
-                if (activeTab.id === 'inputBB') renderPanitiaBBTable();
-                if (activeTab.id === 'inputTB') renderPanitiaTBTable();
-            } else {
-                 renderPanitiaCrudTable(); 
-            }
+        function refreshViews() {
+            const activeTab = document.querySelector('.panitia-tab-content[style*="block"]').id;
+            if (activeTab === 'inputPeserta') renderPanitiaCrudTable();
+            if (activeTab === 'inputBB') renderPanitiaBBTable();
+            if (activeTab === 'inputTB') renderPanitiaTBTable();
         }
-        
+
         function showPanitiaTab(tabId) {
-            document.querySelectorAll('.panitia-tab-content').forEach(tab => {
-                tab.style.display = 'none';
-            });
-            document.querySelectorAll('.tab-button').forEach(btn => {
-                btn.classList.remove('active');
-            });
-
+            document.querySelectorAll('.panitia-tab-content').forEach(t => t.style.display = 'none');
+            document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
             document.getElementById(tabId).style.display = 'block';
             document.querySelector(`button[onclick="showPanitiaTab('${tabId}')"]`).classList.add('active');
-            
-            // Render ulang tabel saat tab dibuka
-            if (tabId === 'inputPeserta') {
-                renderPanitiaCrudTable();
-                document.getElementById('searchCrud').value = ''; 
-            }
-            if (tabId === 'inputBB') {
-                renderPanitiaBBTable();
-                document.getElementById('searchBB').value = ''; 
-            }
-            if (tabId === 'inputTB') {
-                renderPanitiaTBTable();
-                document.getElementById('searchTB').value = ''; 
-            }
+            refreshViews();
         }
 
-        // =========================================================================
-        // --- LOGIKA UTILITY (Global & Penilaian) ---
-        // =========================================================================
-
-        function updateSekolahDropdowns(dropdownId) {
-            const sekolahSelect = document.getElementById(dropdownId);
-            if (sekolahSelect) {
-                sekolahSelect.innerHTML = '<option value="">Pilih</option>';
-                Object.keys(allSekolah).forEach((key) => {
-                    const sekolah = allSekolah[key];
-                    if (sekolah.statusPenilaian === 'Dibuka') {
-                        const option = document.createElement('option');
-                        option.value = key;
-                        option.textContent = sekolah.namaSekolah;
-                        sekolahSelect.appendChild(option);
-                    }
-                });
-            }
-        }
-
-        function getPenilaianData(idPeserta) {
-             const foundKey = Object.keys(allPenilaian).find(key => allPenilaian[key].idPeserta === idPeserta);
-             return foundKey ? { ...allPenilaian[foundKey], idPenilaian: foundKey } : {};
+        // --- CORE LOGIC ---
+        function updateSekolahDropdowns() {
+            const sel = document.getElementById('panitiaSekolahSelect');
+            sel.innerHTML = '<option value="">Pilih Sekolah</option>';
+            Object.keys(allSekolah).forEach(k => {
+                if (allSekolah[k].statusPenilaian === 'Dibuka') {
+                    sel.innerHTML += `<option value="${k}">${allSekolah[k].namaSekolah}</option>`;
+                }
+            });
         }
 
         function generateRandomCode() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            const numbers = '0123456789';
-            let code = [];
-            
-            code.push(chars[Math.floor(Math.random() * chars.length)]);
-            code.push(chars[Math.floor(Math.random() * chars.length)]);
-
-            code.push(numbers[Math.floor(Math.random() * numbers.length)]);
-            code.push(numbers[Math.floor(Math.random() * numbers.length)]);
-
-            for (let i = code.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [code[i], code[j]] = [code[j], code[i]];
-            }
-
-            return code.join('');
-        }
-        
-        /**
-         * @param {string} containerId ID div kontainer tabel.
-         * @param {string} searchInputId ID input pencarian.
-         * @param {number} nameColIndex Index kolom Nama (contoh: 2 jika No, Kode, Nama).
-         * @param {number} codeColIndex Index kolom Kode (contoh: 1 jika No, Kode, Nama).
-         */
-        function filterTable(containerId, searchInputId, nameColIndex, codeColIndex) {
-            const input = document.getElementById(searchInputId);
-            const filter = input.value.toUpperCase();
-            const tableContainer = document.getElementById(containerId).querySelector('.table-container');
-            if (!tableContainer) return;
-            
-            const tr = tableContainer.getElementsByTagName("tr");
-            
-            for (let i = 0; i < tr.length; i++) {
-                if (tr[i].parentNode.tagName === 'THEAD') continue; 
-
-                const tdCode = tr[i].getElementsByTagName("td")[codeColIndex];
-                const tdName = tr[i].getElementsByTagName("td")[nameColIndex];
-
-                if (tdName && tdCode) {
-                    let nameText = tdName.textContent || tdName.innerText;
-                    let codeText = tdCode.textContent || tdCode.innerText;
-                    
-                    if (nameText.toUpperCase().indexOf(filter) > -1 || codeText.toUpperCase().indexOf(filter) > -1) {
-                        tr[i].style.display = "";
-                    } else {
-                        tr[i].style.display = "none";
-                    }
-                }
-            }
+            const c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = '';
+            for(let i=0; i<4; i++) code += c.charAt(Math.floor(Math.random() * c.length));
+            return code;
         }
 
-        function calculateLulusStatus(jenisKelamin, berat, tinggi) {
-            const kriteria = allKetentuan[jenisKelamin];
-            if (!kriteria || !berat || !tinggi) {
-                return false; // Belum bisa dinilai lengkap
-            }
-            
-            const idealBB = berat >= kriteria.minBerat && berat <= kriteria.maxBerat;
-            const idealTB = tinggi >= kriteria.minTinggi && tinggi <= kriteria.maxTinggi;
-            
-            return idealBB && idealTB;
+        function getPenilaianData(id) {
+            const key = Object.keys(allPenilaian).find(k => allPenilaian[k].idPeserta === id);
+            return key ? { ...allPenilaian[key], idPenilaian: key } : {};
         }
 
-        /**
-         * Fungsi Inti Simpan Penilaian (Dipanggil saat input kehilangan fokus/onblur)
-         * @param {string} idPeserta - ID Firebase peserta.
-         * @param {string} field - 'BB' atau 'TB'.
-         */
         function savePenilaian(idPeserta, field) {
-            const peserta = allPeserta[idPeserta];
-            if (!peserta) return;
+            const input = document.getElementById(`${field.toLowerCase()}-input-${idPeserta}`);
+            const status = document.getElementById(`status-${field.toLowerCase()}-${idPeserta}`);
+            const val = parseFloat(input.value);
+            const p = allPeserta[idPeserta];
+            const exist = getPenilaianData(idPeserta);
 
-            const inputElement = document.getElementById(`${field.toLowerCase()}-input-${idPeserta}`);
-            if (!inputElement) return;
+            status.textContent = '⏳';
+            status.style.color = 'var(--gold)';
 
-            const value = inputElement.value.trim();
-            const existingPenilaian = getPenilaianData(idPeserta);
-            const existingIdPenilaian = existingPenilaian.idPenilaian;
-            
-            const numericValue = parseFloat(value);
-            
-            // Set null jika input kosong atau NaN
-            const cleanValue = (isNaN(numericValue) || value === "") ? null : numericValue;
-
-            const oldBerat = existingPenilaian.beratBadan !== undefined ? existingPenilaian.beratBadan : null;
-            const oldTinggi = existingPenilaian.tinggiBadan !== undefined ? existingPenilaian.tinggiBadan : null;
-
-            const newBerat = field === 'BB' ? cleanValue : oldBerat; 
-            const newTinggi = field === 'TB' ? cleanValue : oldTinggi; 
-            
-            const keterangan = existingPenilaian.keterangan || null;
-            
-            // Dapatkan indikator status
-            const statusIndicator = document.getElementById(`status-${field.toLowerCase()}-${idPeserta}`);
-            
-            // Jangan simpan jika nilai tidak berubah dan bukan null, atau jika kedua nilai null/kosong
-            if (field === 'BB' && newBerat === oldBerat && newBerat !== null) return;
-            if (field === 'TB' && newTinggi === oldTinggi && newTinggi !== null) return;
-
-            if (newBerat === null && newTinggi === null && !existingIdPenilaian) {
-                 // Jika kedua nilai null dan belum ada entri di Firebase, abaikan.
-                return;
-            }
-
-
-            const hasCompleteData = newBerat !== null && newTinggi !== null;
-            const hasilLulus = hasCompleteData ? calculateLulusStatus(peserta.jenisKelamin, newBerat, newTinggi) : false;
-
-            const dataToSave = {
+            const data = {
+                beratBadan: field === 'BB' ? val : (exist.beratBadan || null),
+                tinggiBadan: field === 'TB' ? val : (exist.tinggiBadan || null),
                 idPeserta: idPeserta,
-                idAdmin: USER_ID, 
-                tglPenilaian: new Date().toISOString(),
-                beratBadan: newBerat, 
-                tinggiBadan: newTinggi, 
-                hasilLulus: hasilLulus,
-                statusTayang: existingPenilaian.statusTayang || false,
-                keterangan: keterangan
-            };
-
-            const updateData = {
-                beratBadan: newBerat, 
-                tinggiBadan: newTinggi,
-                hasilLulus: hasilLulus,
+                idAdmin: USER_ID,
                 tglPenilaian: new Date().toISOString()
             };
 
-            if (statusIndicator) {
-                 statusIndicator.textContent = '...'; 
-                 statusIndicator.style.opacity = '1';
-            }
-
-            if (existingIdPenilaian) {
-                // UPDATE
-                database.ref('penilaian/' + existingIdPenilaian).update(updateData)
-                .then(() => {
-                   if (statusIndicator) {
-                       statusIndicator.textContent = '✔'; 
-                       setTimeout(() => { statusIndicator.style.opacity = '0'; }, 1500);
-                   }
-                }).catch(error => {
-                    alert(`Gagal mengubah data ${field}: ${error.message}`);
-                    if (statusIndicator) { statusIndicator.textContent = 'X'; }
-                });
-
+            // Hitung kelulusan
+            if (data.beratBadan && data.tinggiBadan) {
+                const k = allKetentuan[p.jenisKelamin];
+                data.hasilLulus = (data.beratBadan >= k.minBerat && data.beratBadan <= k.maxBerat && 
+                                   data.tinggiBadan >= k.minTinggi && data.tinggiBadan <= k.maxTinggi);
             } else {
-                // INPUT BARU (CREATE)
-                const newPenilaianRef = database.ref('penilaian').push();
-                newPenilaianRef.set(dataToSave)
-                .then(() => {
-                    if (statusIndicator) {
-                       statusIndicator.textContent = '✔'; 
-                       setTimeout(() => { statusIndicator.style.opacity = '0'; }, 1500);
-                    }
-                }).catch(error => {
-                    alert(`Gagal menyimpan data ${field} baru: ${error.message}`);
-                    if (statusIndicator) { statusIndicator.textContent = 'X'; }
-                });
+                data.hasilLulus = false;
             }
+
+            const ref = exist.idPenilaian ? database.ref('penilaian/'+exist.idPenilaian) : database.ref('penilaian').push();
+            ref.update(data).then(() => {
+                status.textContent = '✔';
+                status.style.color = 'var(--success)';
+                setTimeout(() => { status.textContent = ''; }, 2000);
+            });
         }
 
-
-        // =========================================================================
-        // --- LOGIKA PANITIA - TAB 1: CRUD NAMA ---
-        // =========================================================================
-        
-        function daftarPesertaHandler(event) {
-            event.preventDefault();
-            const idSekolah = document.getElementById('panitiaSekolahSelect').value;
-            const nama = document.getElementById('panitiaNama').value;
-            const jenisKelamin = document.getElementById('panitiaJenisKelamin').value;
-
-            if (idSekolah && nama && jenisKelamin) {
-                
-                const submitButton = event.target.querySelector('button[type="submit"]');
-                submitButton.disabled = true;
-                submitButton.textContent = 'Membuat Kode Acak...';
-
-                const tryRegister = async () => {
-                    let kodePeserta = generateRandomCode();
-                    let isUnique = false;
-                    let attempts = 0;
-
-                    while (!isUnique && attempts < 10) { 
-                        const exists = Object.values(allPeserta).some(p => p.kodePeserta === kodePeserta);
-                        
-                        if (!exists) {
-                            isUnique = true;
-                        } else {
-                            kodePeserta = generateRandomCode(); 
-                            attempts++;
-                        }
-                    }
-
-                    if (!isUnique) {
-                        alert('Gagal menghasilkan kode unik setelah 10 kali percobaan. Silakan coba lagi.');
-                        submitButton.disabled = false;
-                        submitButton.textContent = 'Daftar Peserta Baru';
-                        return;
-                    }
-
-                    database.ref('peserta').push({
-                        idSekolah: idSekolah,
-                        nama: nama,
-                        jenisKelamin: jenisKelamin,
-                        kodePeserta: kodePeserta 
-                    })
-                    .then(() => {
-                        alert(`Pendaftaran peserta berhasil! Kode Peserta: ${kodePeserta}`);
-                        document.getElementById('panitiaInputForm').reset();
-                    })
-                    .catch((dbError) => {
-                        alert('Gagal menyimpan data peserta: ' + dbError.message);
-                    })
-                    .finally(() => {
-                        submitButton.disabled = false;
-                        submitButton.textContent = 'Daftar Peserta Baru';
-                    });
-                };
-
-                tryRegister();
-
-            } else {
-                alert('Semua kolom harus diisi.');
-            }
-        }
-        
+        // --- RENDER TABLES ---
         function renderPanitiaCrudTable() {
-            const pesertaListDiv = document.getElementById('panitiaCrudList');
-            if (!pesertaListDiv) return;
-            
-            let html = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Kode Acak</th>
-                            <th>Nama</th>
-                            <th>Sekolah</th>
-                            <th>J.Kelamin</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            
-            const sortedPesertaKeys = Object.keys(allPeserta).sort((a, b) => a.localeCompare(b));
-
-            let noUrut = 1;
-            for (const idPeserta of sortedPesertaKeys) {
-                const p = allPeserta[idPeserta];
-                const sekolahNama = allSekolah[p.idSekolah]?.namaSekolah || 'N/A';
-
-                html += `
-                    <tr>
-                        <td>${noUrut++}</td>
-                        <td><strong>${p.kodePeserta || '--'}</strong></td>
-                        <td>${p.nama}</td>
-                        <td>${sekolahNama}</td>
-                        <td>${p.jenisKelamin}</td>
-                    </tr>
-                `;
-            }
-            
-            html += '</tbody></table>';
-            pesertaListDiv.innerHTML = html;
-            filterTable('inputPeserta', 'searchCrud', 2, 1); // Index: Nama=2, Kode=1
+            let h = `<table><thead><tr><th>No</th><th>Kode</th><th>Nama</th><th>Sekolah</th></tr></thead><tbody>`;
+            Object.keys(allPeserta).sort().forEach((k, i) => {
+                const p = allPeserta[k];
+                h += `<tr><td>${i+1}</td><td><b style="color:var(--blue)">${p.kodePeserta}</b></td><td>${p.nama}</td><td>${allSekolah[p.idSekolah]?.namaSekolah || '-'}</td></tr>`;
+            });
+            document.getElementById('panitiaCrudList').innerHTML = h + `</tbody></table>`;
         }
-
-        
-        // =========================================================================
-        // --- LOGIKA PANITIA - TAB 2: INPUT BB (Auto-Save) ---
-        // =========================================================================
 
         function renderPanitiaBBTable() {
-            const pesertaListDiv = document.getElementById('panitiaBBList');
-            if (!pesertaListDiv) return;
-            
-            let html = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Kode Acak</th>
-                            <th>Nama (J.K)</th>
-                            <th>Input BB (kg)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-
-            const sortedPesertaKeys = Object.keys(allPeserta).sort((a, b) => a.localeCompare(b));
-            
-            let noUrut = 1;
-            for (const idPeserta of sortedPesertaKeys) {
-                const p = allPeserta[idPeserta];
-                const penilaianData = getPenilaianData(idPeserta); 
-                
-                const currentBB = penilaianData.beratBadan !== null && penilaianData.beratBadan !== undefined ? penilaianData.beratBadan : '';
-
-                html += `
-                    <tr>
-                        <td>${noUrut++}</td>
-                        <td><strong>${p.kodePeserta || '--'}</strong></td>
-                        <td>${p.nama} (<span style="color: ${p.jenisKelamin === 'Cowok' ? '#007bff' : '#dc3545'}; font-weight: bold;">${p.jenisKelamin}</span>)</td>
-                        <td>
-                            <div class="input-with-status">
-                                <input type="number" step="0.1" id="bb-input-${idPeserta}" 
-                                    placeholder="Berat" value="${currentBB}" 
-                                    onblur="savePenilaian('${idPeserta}', 'BB')">
-                                <span class="save-status" id="status-bb-${idPeserta}" style="opacity: 0;"></span>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }
-            
-            html += '</tbody></table>';
-            pesertaListDiv.innerHTML = html;
-            filterTable('inputBB', 'searchBB', 2, 1); // Index: Nama=2, Kode=1
+            let h = `<table><thead><tr><th>No</th><th>Kode</th><th>Nama (JK)</th><th>Berat (kg)</th></tr></thead><tbody>`;
+            Object.keys(allPeserta).sort().forEach((k, i) => {
+                const p = allPeserta[k];
+                const v = getPenilaianData(k).beratBadan || '';
+                h += `<tr><td>${i+1}</td><td>${p.kodePeserta}</td><td>${p.nama} <small>(${p.jenisKelamin})</small></td>
+                <td><div class="input-with-status"><input type="number" step="0.1" id="bb-input-${k}" value="${v}" onblur="savePenilaian('${k}','BB')"><span class="save-status" id="status-bb-${k}"></span></div></td></tr>`;
+            });
+            document.getElementById('panitiaBBList').innerHTML = h + `</tbody></table>`;
         }
-
-        // =========================================================================
-        // --- LOGIKA PANITIA - TAB 3: INPUT TB (Auto-Save) ---
-        // =========================================================================
 
         function renderPanitiaTBTable() {
-            const pesertaListDiv = document.getElementById('panitiaTBList');
-            if (!pesertaListDiv) return;
-            
-            let html = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Kode Acak</th>
-                            <th>Nama (J.K)</th>
-                            <th>Input TB (cm)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            
-            const sortedPesertaKeys = Object.keys(allPeserta).sort((a, b) => a.localeCompare(b));
-            
-            let noUrut = 1;
-            for (const idPeserta of sortedPesertaKeys) {
-                const p = allPeserta[idPeserta];
-                const penilaianData = getPenilaianData(idPeserta); 
-                
-                const currentTB = penilaianData.tinggiBadan !== null && penilaianData.tinggiBadan !== undefined ? penilaianData.tinggiBadan : '';
-
-                html += `
-                    <tr>
-                        <td>${noUrut++}</td>
-                        <td><strong>${p.kodePeserta || '--'}</strong></td>
-                        <td>${p.nama} (<span style="color: ${p.jenisKelamin === 'Cowok' ? '#007bff' : '#dc3545'}; font-weight: bold;">${p.jenisKelamin}</span>)</td>
-                        <td>
-                            <div class="input-with-status">
-                                <input type="number" step="0.1" id="tb-input-${idPeserta}" 
-                                    placeholder="Tinggi" value="${currentTB}"
-                                    onblur="savePenilaian('${idPeserta}', 'TB')">
-                                <span class="save-status" id="status-tb-${idPeserta}" style="opacity: 0;"></span>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }
-            
-            html += '</tbody></table>';
-            pesertaListDiv.innerHTML = html;
-            filterTable('inputTB', 'searchTB', 2, 1); // Index: Nama=2, Kode=1
+            let h = `<table><thead><tr><th>No</th><th>Kode</th><th>Nama (JK)</th><th>Tinggi (cm)</th></tr></thead><tbody>`;
+            Object.keys(allPeserta).sort().forEach((k, i) => {
+                const p = allPeserta[k];
+                const v = getPenilaianData(k).tinggiBadan || '';
+                h += `<tr><td>${i+1}</td><td>${p.kodePeserta}</td><td>${p.nama} <small>(${p.jenisKelamin})</small></td>
+                <td><div class="input-with-status"><input type="number" step="0.1" id="tb-input-${k}" value="${v}" onblur="savePenilaian('${k}','TB')"><span class="save-status" id="status-tb-${k}"></span></div></td></tr>`;
+            });
+            document.getElementById('panitiaTBList').innerHTML = h + `</tbody></table>`;
         }
+
+        function filterTable(contId, inpId, nameIdx, codeIdx) {
+            const val = document.getElementById(inpId).value.toUpperCase();
+            const rows = document.getElementById(contId).querySelectorAll('tr');
+            rows.forEach((r, i) => {
+                if (i === 0) return;
+                const txt = r.innerText.toUpperCase();
+                r.style.display = txt.includes(val) ? '' : 'none';
+            });
+        }
+
+        function daftarPesertaHandler(e) {
+            e.preventDefault();
+            const data = {
+                idSekolah: document.getElementById('panitiaSekolahSelect').value,
+                nama: document.getElementById('panitiaNama').value,
+                jenisKelamin: document.getElementById('panitiaJenisKelamin').value,
+                kodePeserta: generateRandomCode()
+            };
+            database.ref('peserta').push(data).then(() => {
+                alert('Peserta berhasil didaftarkan! Kode: ' + data.kodePeserta);
+                document.getElementById('panitiaInputForm').reset();
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => { checkAuth(); initializeDataListeners(); });
     </script>
 </body>
 </html>
