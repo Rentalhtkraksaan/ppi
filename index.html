@@ -2,8 +2,8 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PPI Road to Show Goes to School - premium selection portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PPI SYSTEM PORTAL</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -18,7 +18,7 @@
     </script>
     <style>
         :root {
-            --bg-gradient: radial-gradient(circle at center, #333333 0%, #050505 100%);
+            --bg-gradient: radial-gradient(circle at center, #222 0%, #000 100%);
             --card-bg: #111111;
             --gold: #d4af37;
             --blue: #00d2ff;
@@ -27,138 +27,151 @@
             --text: #ffffff;
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
         body { 
             font-family: 'Poppins', sans-serif;
-            margin: 0; background: #1a1a1a; color: var(--text);
+            margin: 0; background: #000; color: var(--text);
+            /* Posisi Center Desktop & Mobile */
             display: flex; align-items: center; justify-content: center;
-            min-height: 100vh; overflow-x: hidden;
+            min-height: 100vh; width: 100vw; padding: 20px;
+            overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
         }
 
         .bg-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-gradient); z-index: -1; }
 
         .container { 
-            width: 90%; max-width: 450px; margin: 20px auto;
-            padding: 50px 25px 60px 25px; background: var(--card-bg);
-            border-radius: 40px; border: 2px solid rgba(212, 175, 55, 0.3);
-            text-align: center; box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+            width: 100%; max-width: 400px;
+            padding: 45px 25px; background: var(--card-bg);
+            border-radius: 35px; border: 1px solid rgba(212, 175, 55, 0.2);
+            text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.7);
             position: relative; overflow: hidden;
+            margin: auto;
         }
 
-        .version-block {
-            position: absolute; bottom: 0; left: 0; background: rgba(212, 175, 55, 0.2);
+        .state-section { display: none; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .version-tag {
+            position: absolute; top: 0; right: 0; background: rgba(212, 175, 55, 0.2);
             color: var(--gold); padding: 5px 15px; font-size: 0.6em;
-            font-weight: 700; letter-spacing: 2px; border-top-right-radius: 15px;
-            text-transform: uppercase;
+            font-weight: 700; border-bottom-left-radius: 20px; letter-spacing: 1px;
         }
 
-        h1 { font-size: 1.3em; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 40px; color: var(--gold); }
-
-        .menu-grid { display: flex; flex-direction: column; gap: 15px; }
+        h1 { font-size: 1.3em; letter-spacing: 5px; color: var(--gold); margin-bottom: 35px; text-transform: uppercase; }
 
         .mode-button {
-            display: block; width: 100%; padding: 18px; border-radius: 18px;
+            display: block; width: 100%; padding: 16px; border-radius: 15px;
             font-weight: 600; font-size: 0.85em; letter-spacing: 1.5px;
-            transition: all 0.3s ease; cursor: pointer; border: none; outline: none;
+            margin-bottom: 15px; cursor: pointer; border: none; transition: all 0.3s ease;
         }
 
-        .btn-user { background: rgba(0, 210, 255, 0.1); border: 1.5px solid var(--blue); color: var(--blue); }
-        .btn-admin { background: rgba(255, 65, 108, 0.1); border: 1.5px solid var(--red); color: var(--red); }
-        .btn-panitia { background: rgba(241, 196, 15, 0.1); border: 1.5px solid var(--yellow); color: var(--yellow); }
-        .btn-dev { 
-            margin-top: 25px; background: transparent; border: 1px solid rgba(212, 175, 55, 0.4); 
-            color: var(--gold); font-size: 0.7em; animation: elegantPulse 3s infinite;
-        }
-
+        .btn-user { background: rgba(0, 210, 255, 0.1); border: 1px solid var(--blue); color: var(--blue); }
+        .btn-admin { background: rgba(255, 65, 108, 0.1); border: 1px solid var(--red); color: var(--red); }
+        .btn-panitia { background: rgba(241, 196, 15, 0.1); border: 1px solid var(--yellow); color: var(--yellow); }
+        
         .form-input {
-            width: 100%; padding: 15px; margin-bottom: 15px;
-            background: rgba(255,255,255,0.05); border: 1px solid #333;
+            width: 100%; padding: 15px; margin-bottom: 12px;
+            background: rgba(255,255,255,0.03); border: 1px solid #333;
             border-radius: 12px; color: white; text-align: center; font-family: 'Poppins';
         }
-        .form-input:focus { border-color: var(--gold); outline: none; }
 
-        @keyframes elegantPulse {
-            0%, 100% { opacity: 0.5; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.02); }
+        .spinner { 
+            width: 45px; height: 45px; border: 3px solid rgba(212,175,55,0.1); 
+            border-top-color: var(--gold); border-radius: 50%; 
+            animation: spin 0.8s linear infinite; margin: 20px auto; 
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: #111; padding: 30px; border-radius: 25px; width: 100%; max-width: 320px; border: 1px solid var(--gold); }
+
+        /* ANIMASI KELAP-KELIP DEVELOPER (TENANG) */
+        @keyframes devGlow {
+            0% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.1); border-color: rgba(212, 175, 55, 0.1); transform: scale(1); }
+            50% { box-shadow: 0 0 15px rgba(212, 175, 55, 0.3); border-color: rgba(212, 175, 55, 0.5); transform: scale(1.01); background: rgba(212, 175, 55, 0.05); }
+            100% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.1); border-color: rgba(212, 175, 55, 0.1); transform: scale(1); }
         }
 
-        .spinner { width: 40px; height: 40px; border: 3px solid rgba(212, 175, 55, 0.1); border-top: 3px solid var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .dev-glow-button {
+            animation: devGlow 3s infinite ease-in-out;
+            transition: all 0.5s ease !important;
+        }
 
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 1000; align-items: center; justify-content: center; }
-        .modal-content { background: #111; padding: 30px; border-radius: 30px; width: 90%; max-width: 320px; border: 1px solid var(--gold); text-align: center; }
-        
-        #closed-message { display: none; padding: 25px; border-radius: 20px; background: rgba(255, 65, 108, 0.1); border: 2px dashed var(--red); color: var(--red); margin-bottom: 20px; }
-        #blocked-message { display: none; color: var(--red); padding: 40px 20px; }
-        #registration-area { display: none; }
+        .dev-glow-button:hover {
+            background: rgba(212, 175, 55, 0.2) !important;
+            color: var(--gold) !important;
+            animation: none;
+        }
     </style>
 </head>
 <body>
 
     <div class="bg-glow"></div>
 
-    <div class="container" id="main-container">
-        <div class="version-block">V 2.0</div>
+    <div class="container">
+        <div class="version-tag">V 2.0</div>
         <h1 id="main-title">🏆 PPI SYSTEM</h1>
 
-        <div id="loading-initial">
+        <div id="section-loading" class="state-section" style="display: block;">
             <div class="spinner"></div>
-            <p style="color: var(--gold); letter-spacing: 2px; font-size: 0.7em; margin-top: 15px;">SECURE LOADING...</p>
+            <p style="font-size: 0.7em; letter-spacing: 2px; color: var(--gold); opacity: 0.8;">AUTHENTICATING DEVICE...</p>
         </div>
 
-        <div id="blocked-message">
-            <div style="font-size: 3em; margin-bottom: 20px;">🚫</div>
-            <h2 style="letter-spacing: 2px;">AKSES DITOLAK</h2>
-            <p style="font-size: 0.8em; opacity: 0.7;">Identitas/Perangkat Anda telah diblokir oleh Admin.</p>
+        <div id="section-blocked" class="state-section">
+            <div style="font-size: 4em; margin-bottom: 15px;">🚫</div>
+            <h2 style="color: var(--red); letter-spacing: 2px;">ACCESS DENIED</h2>
+            <p style="font-size: 0.8em; opacity: 0.6; line-height: 1.6;">Perangkat Anda telah diblokir secara permanen.</p>
         </div>
 
-        <div id="registration-area">
-            <p style="font-size: 0.8em; color: var(--gold); margin-bottom: 20px; letter-spacing: 1px;">SILA VERIFIKASI IDENTITAS ANDA</p>
+        <div id="section-register" class="state-section">
+            <p style="font-size: 0.75em; color: var(--gold); margin-bottom: 25px; letter-spacing: 1px;">DAFTARKAN IDENTITAS ANDA</p>
             <form onsubmit="saveIdentity(event)">
                 <input type="text" id="reg-nama" class="form-input" placeholder="NAMA LENGKAP" required>
-                <input type="number" id="reg-angkatan" class="form-input" placeholder="ANGKATAN (CONTOH: 2024)" required>
-                <select id="reg-status" class="form-input" required>
+                <input type="number" id="reg-angkatan" class="form-input" placeholder="ANGKATAN" required>
+                <select id="reg-status" class="form-input" required style="appearance: none;">
                     <option value="" disabled selected>PILIH STATUS</option>
                     <option value="PENGURUS">PENGURUS</option>
                     <option value="PPI">PPI</option>
                 </select>
-                <button type="submit" class="mode-button" style="background: var(--gold); color: #000; margin-top: 10px;">DAFTAR AKSES</button>
+                <button type="submit" class="mode-button" style="background: var(--gold); color: #000; margin-top: 10px; font-weight: 700;">REQUEST ACCESS</button>
             </form>
         </div>
 
-        <div id="content-wrapper" style="display: none;">
-            <div class="menu-grid" id="menu-grid">
-                <button onclick="handleUserAccess()" class="mode-button btn-user">RESULT PORTAL</button>
-                <button onclick="showLogin('admin')" class="mode-button btn-admin">ADMINISTRATOR</button>
-                <button onclick="showLogin('panitia')" class="mode-button btn-panitia">COMMITTEE ACCESS</button>
+        <div id="section-closed" class="state-section">
+            <div style="padding: 40px 20px; border: 1px dashed var(--red); border-radius: 25px; background: rgba(255, 65, 108, 0.05);">
+                <h3 style="color: var(--red); margin: 0; letter-spacing: 2px;">PORTAL CLOSED</h3>
+                <p style="font-size: 0.75em; opacity: 0.7; margin-top: 10px;">Akses ditutup oleh Administrator.</p>
             </div>
         </div>
 
-        <div id="closed-message">
-            <div style="font-weight: 600; font-size: 1.2em;">PORTAL CLOSED</div>
-            <div style="font-size: 0.7em; opacity: 0.8; margin-top: 5px;">Akses ditutup.</div>
+        <div id="section-menu" class="state-section">
+            <div id="user-info" style="font-size: 0.65em; color: var(--gold); margin-bottom: 25px; opacity: 0.7;"></div>
+            <button onclick="handleUserAccess()" class="mode-button btn-user">OPEN RESULT PORTAL</button>
+            <button onclick="showLogin('admin')" class="mode-button btn-admin">ADMINISTRATOR</button>
+            <button onclick="showLogin('panitia')" class="mode-button btn-panitia">COMMITTEE AREA</button>
         </div>
 
-        <button id="developer-button" onclick="logAction('DEV_PORTAL', 'biodata.html')" class="mode-button btn-dev" style="display: none;">
+        <button id="dev-link" onclick="logAction('DEV_VIEW', 'biodata.html')" class="mode-button dev-glow-button" style="display:none; background:none; color:rgba(212,175,55,0.6); font-size:0.65em; border:1px solid rgba(212,175,55,0.1); margin-top:30px; letter-spacing: 1px;">
             VIEW BIODATA DEVELOPER SISTEM
         </button>
     </div>
 
     <div id="login-modal" class="modal">
         <div class="modal-content">
-            <h2 id="login-title" style="color: var(--gold); font-size: 1em;"></h2>
+            <h3 id="login-title" style="color: var(--gold); font-size: 0.9em; margin-bottom: 20px; letter-spacing: 2px;"></h3>
             <form onsubmit="handleLogin(event)">
                 <input type="hidden" id="role-input">
-                <input type="password" id="password-input" placeholder="PASSKEY" style="width:100%; padding:12px; margin:15px 0; background:#000; color:#fff; border:1px solid #333; border-radius:10px; text-align:center;" required>
-                <button type="submit" class="mode-button" style="background:var(--gold); color:#000;">VERIFY</button>
+                <input type="password" id="password-input" class="form-input" placeholder="ENTER PASSKEY" required>
+                <button type="submit" class="mode-button" style="background:var(--gold); color:#000; font-weight: 700;">VERIFY</button>
+                <button type="button" onclick="hideLogin()" style="background:none; border:none; color:#555; width:100%; margin-top:10px; cursor:pointer; font-size: 0.8em;">CANCEL</button>
             </form>
-            <button onclick="hideLogin()" style="background:none; border:none; color:#777; margin-top:15px; cursor:pointer;">Batal</button>
         </div>
     </div>
 
     <script>
-        const FIREBASE_CONFIG = {
+        const CONFIG = {
             apiKey: "AIzaSyDpPEkKbEt6b_v2OWlBfGuaVQpBg2-RWR4",
             authDomain: "cwu-gen-2.firebaseapp.com",
             databaseURL: "https://cwu-gen-2-default-rtdb.firebaseio.com",
@@ -167,130 +180,100 @@
             messagingSenderId: "40585612014",
             appId: "1:40585612014:web:c88141fee3699aca68181ff"
         };
-        firebase.initializeApp(FIREBASE_CONFIG);
-        const database = firebase.database();
-        
-        const ADMIN_PASSWORD = "ppiadminku01"; 
-        const PANITIA_PASSWORD = "ppipanitia";
+        firebase.initializeApp(CONFIG);
+        const db = firebase.database();
+        const KEYS = { admin: "ppiadminku01", panitia: "ppipanitia" };
 
-        // Jantung Logika: Cek apakah user valid atau sudah dihapus Admin
-        async function checkIdentityAndSync() {
-            const savedName = localStorage.getItem('ppi_nama');
-            if (!savedName) {
-                document.getElementById('loading-initial').style.display = 'none';
-                document.getElementById('registration-area').style.display = 'block';
-                return;
-            }
+        function setView(id) {
+            document.querySelectorAll('.state-section').forEach(s => s.style.display = 'none');
+            const target = document.getElementById(id);
+            if(target) target.style.display = 'block';
+        }
 
-            const myFingerprint = savedName + "_" + navigator.userAgent.slice(-15);
-            
-            // Cek apakah data log masih ada di Firebase
-            database.ref('developer_clicks').orderByChild('user_id').equalTo(myFingerprint).once('value', (snapshot) => {
-                if (!snapshot.exists()) {
-                    // Jika data log tidak ada (berarti dihapus Admin di kepo.html)
+        async function initApp() {
+            const localNama = localStorage.getItem('ppi_nama');
+            if (!localNama) { setView('section-register'); return; }
+            const fingerprint = localNama + "_" + navigator.userAgent.slice(-15);
+            db.ref('developer_clicks').orderByChild('user_id').equalTo(fingerprint).once('value', (snap) => {
+                if (!snap.exists()) {
                     localStorage.clear();
-                    alert("Sesi Anda berakhir. Silahkan isi ulang identitas.");
+                    alert("Sesi berakhir. Silahkan isi ulang.");
                     location.reload();
+                    return;
+                }
+                document.getElementById('user-info').textContent = "WELCOME, " + localNama.toUpperCase() + '!';
+                startSync(fingerprint);
+            });
+        }
+
+        function startSync(fingerprint) {
+            db.ref().on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (!data) return;
+                const blacklist = Object.values(data.blacklist || {});
+                const isPortalOpen = (data.kepo_toggle === 'on');
+
+                if (blacklist.includes(fingerprint)) {
+                    setView('section-blocked');
+                    document.getElementById('main-title').style.display = 'none';
+                    document.getElementById('dev-link').style.display = 'none';
                 } else {
-                    startSecurityMonitor(myFingerprint);
+                    setView(isPortalOpen ? 'section-menu' : 'section-closed');
+                    document.getElementById('dev-link').style.display = 'block';
                 }
             });
         }
 
         async function saveIdentity(e) {
             e.preventDefault();
-            const nama = document.getElementById('reg-nama').value;
-            const angkatan = document.getElementById('reg-angkatan').value;
-            const status = document.getElementById('reg-status').value;
-            
-            localStorage.setItem('ppi_nama', nama);
-            localStorage.setItem('ppi_angkatan', angkatan);
-            localStorage.setItem('ppi_status', status);
-            
-            // Kirim log pertama kali agar terdaftar di sistem kepo.html
-            await logAction('DAFTAR_PERTAMA', null);
+            localStorage.setItem('ppi_nama', document.getElementById('reg-nama').value.trim());
+            localStorage.setItem('ppi_angkatan', document.getElementById('reg-angkatan').value);
+            localStorage.setItem('ppi_status', document.getElementById('reg-status').value);
+            await logAction('NEW_REGISTRATION', null);
             location.reload();
         }
 
-        function startSecurityMonitor(fingerprint) {
-            database.ref('blacklist').on('value', (snapshot) => {
-                const blacklist = Object.values(snapshot.val() || {});
-                const isBlocked = blacklist.includes(fingerprint);
-                
-                if (isBlocked) {
-                    document.getElementById('loading-initial').style.display = 'none';
-                    document.getElementById('content-wrapper').style.display = 'none';
-                    document.getElementById('closed-message').style.display = 'none';
-                    document.getElementById('registration-area').style.display = 'none';
-                    document.getElementById('blocked-message').style.display = 'block';
-                    document.getElementById('main-title').style.display = 'none';
-                } else {
-                    checkPortalStatus();
-                }
-            });
-        }
-
-        function checkPortalStatus() {
-            database.ref('kepo_toggle').on('value', (snapshot) => {
-                const status = snapshot.val();
-                const contentWrapper = document.getElementById('content-wrapper');
-                const closedMessage = document.getElementById('closed-message');
-                const devButton = document.getElementById('developer-button');
-                
-                document.getElementById('loading-initial').style.display = 'none';
-                document.getElementById('registration-area').style.display = 'none';
-                devButton.style.display = 'block'; 
-
-                if (status === 'on') {
-                    contentWrapper.style.display = 'block';
-                    closedMessage.style.display = 'none';
-                } else {
-                    contentWrapper.style.display = 'none';
-                    closedMessage.style.display = 'block';
-                }
-            });
-        }
-
-        async function logAction(label, redirectUrl) {
+        async function logAction(label, url) {
+            const n = localStorage.getItem('ppi_nama') || 'Guest';
+            const fingerprint = n + "_" + navigator.userAgent.slice(-15);
+            const now = new Date();
             try {
-                const sekarang = new Date();
-                const nama = localStorage.getItem('ppi_nama') || 'Anonim';
-                const info = (localStorage.getItem('ppi_status') || '-') + " (" + (localStorage.getItem('ppi_angkatan') || '-') + ")";
-                const fingerprint = nama + "_" + navigator.userAgent.slice(-15);
-
-                const dataLog = {
+                await db.ref('developer_clicks').push({
                     user_id: fingerprint,
-                    nama: nama,
-                    info_tambahan: info,
+                    nama: n,
+                    info_tambahan: (localStorage.getItem('ppi_status') || '-') + " (" + (localStorage.getItem('ppi_angkatan') || '-') + ")",
                     perangkat: navigator.userAgent,
-                    hari: ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"][sekarang.getDay()],
-                    tanggal: sekarang.toLocaleDateString('id-ID'),
-                    jam: sekarang.toLocaleTimeString('id-ID', {hour12: false}),
+                    tanggal: now.toLocaleDateString('id-ID'),
+                    jam: now.toLocaleTimeString('id-ID', {hour12:false}),
                     tipe_akses: label
-                };
-                await database.ref('developer_clicks').push(dataLog);
-            } catch (err) { console.error(err); }
-            finally { if (redirectUrl) window.location.href = redirectUrl; }
+                });
+            } catch(e) {}
+            if (url) window.location.href = url;
         }
-
-        document.addEventListener('DOMContentLoaded', checkIdentityAndSync);
 
         function showLogin(role) {
             document.getElementById('login-modal').style.display = 'flex';
             document.getElementById('role-input').value = role;
             document.getElementById('login-title').textContent = role.toUpperCase() + ' ACCESS';
         }
-        function hideLogin() { document.getElementById('login-modal').style.display = 'none'; }
-        async function handleUserAccess() { await logAction('USER_ACCESS', 'user.html'); }
 
-        async function handleLogin(event) {
-            event.preventDefault();
-            const pass = document.getElementById('password-input').value;
-            const role = document.getElementById('role-input').value;
-            if (pass === (role === 'admin' ? ADMIN_PASSWORD : PANITIA_PASSWORD)) {
-                await logAction(role.toUpperCase() + '_LOGIN', role + '.html');
-            } else { alert("PASSKEY SALAH"); }
+        function hideLogin() { 
+            document.getElementById('login-modal').style.display = 'none'; 
+            document.getElementById('password-input').value = '';
         }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const role = document.getElementById('role-input').value;
+            if (document.getElementById('password-input').value === KEYS[role]) {
+                await logAction(role.toUpperCase() + '_LOGIN', role + '.html');
+            } else {
+                alert("PASSKEY SALAH!");
+            }
+        }
+
+        async function handleUserAccess() { await logAction('USER_PORTAL_OPEN', 'user.html'); }
+        window.onload = initApp;
     </script>
 </body>
 </html>
