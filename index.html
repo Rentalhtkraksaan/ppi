@@ -9,7 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script>
-        // Kode Anti-Debugging / Anti-Inspect Element (tetap)
+        // Kode Anti-Debugging / Anti-Inspect Element
         document.addEventListener("contextmenu", e => e.preventDefault());
         document.addEventListener("selectstart", e => e.preventDefault());
         document.addEventListener("keydown", e => {
@@ -48,25 +48,43 @@
             z-index: -1;
         }
 
-        /* Responsivitas Kotak Utama */
+        /* Kotak Utama */
         .container { 
             width: 90%; 
-            max-width: 450px; /* Ukuran maksimal di Laptop */
+            max-width: 450px;
             margin: 20px auto;
-            padding: 40px 25px;
+            padding: 50px 25px 60px 25px; /* Padding bawah disesuaikan */
             background: var(--card-bg);
             border-radius: 40px;
             border: 2px solid rgba(212, 175, 55, 0.3);
             text-align: center;
             box-shadow: 0 40px 100px rgba(0,0,0,0.8);
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        /* Styling di HP */
+        /* V 1.2 di dalam Blok */
+        .version-block {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            background: rgba(212, 175, 55, 0.2); /* Background blok emas transparan */
+            color: var(--gold);
+            padding: 5px 15px;
+            font-size: 0.6em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            border-top-right-radius: 15px; /* Sudut blok melengkung */
+            border-right: 1px solid rgba(212, 175, 55, 0.3);
+            border-top: 1px solid rgba(212, 175, 55, 0.3);
+            text-transform: uppercase;
+        }
+
         @media (max-width: 480px) {
             .container {
                 width: 95%;
-                padding: 35px 20px;
+                padding: 45px 20px 55px 20px;
                 border-radius: 30px;
             }
             h1 { font-size: 1.1em !important; }
@@ -80,7 +98,7 @@
 
         .menu-grid { display: flex; flex-direction: column; gap: 15px; }
 
-        /* Tombol & Animasi */
+        /* Tombol */
         .mode-button {
             display: block; width: 100%; padding: 18px;
             border-radius: 18px; text-decoration: none;
@@ -93,11 +111,11 @@
         .btn-admin { background: rgba(255, 65, 108, 0.1); border: 1.5px solid var(--red); color: var(--red); }
         .btn-panitia { background: rgba(241, 196, 15, 0.1); border: 1.5px solid var(--yellow); color: var(--yellow); }
 
-        .btn-user:hover, .btn-user:active { background: var(--blue); color: #000; box-shadow: 0 0 20px rgba(0, 210, 255, 0.4); }
-        .btn-admin:hover, .btn-admin:active { background: var(--red); color: #fff; box-shadow: 0 0 20px rgba(255, 65, 108, 0.4); }
-        .btn-panitia:hover, .btn-panitia:active { background: var(--yellow); color: #000; box-shadow: 0 0 20px rgba(241, 196, 15, 0.4); }
+        .btn-user:hover { background: var(--blue); color: #000; box-shadow: 0 0 20px rgba(0, 210, 255, 0.4); }
+        .btn-admin:hover { background: var(--red); color: #fff; box-shadow: 0 0 20px rgba(255, 65, 108, 0.4); }
+        .btn-panitia:hover { background: var(--yellow); color: #000; box-shadow: 0 0 20px rgba(241, 196, 15, 0.4); }
 
-        /* System by Dev - Kelap Kelip Elegan */
+        /* System by Dev */
         .btn-dev {
             margin-top: 25px; background: transparent;
             border: 1px solid rgba(212, 175, 55, 0.4);
@@ -110,7 +128,7 @@
         }
         .btn-dev:hover { background: var(--gold); color: #000; opacity: 1; }
 
-        /* Loading Animation */
+        /* Loading */
         .loader-wrapper { display: flex; flex-direction: column; align-items: center; gap: 15px; }
         .spinner {
             width: 40px; height: 40px;
@@ -150,6 +168,8 @@
     <div class="bg-glow"></div>
 
     <div class="container">
+        <div class="version-block">V 2.0</div>
+
         <h1>🏆 PPI SYSTEM</h1>
 
         <div id="loading-initial">
