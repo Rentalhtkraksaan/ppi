@@ -32,7 +32,6 @@
         body { 
             font-family: 'Poppins', sans-serif;
             margin: 0; background: #000; color: var(--text);
-            /* Posisi Center Desktop & Mobile */
             display: flex; align-items: center; justify-content: center;
             min-height: 100vh; width: 100vw; padding: 20px;
             overflow-x: hidden;
@@ -87,7 +86,6 @@
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         .modal-content { background: #111; padding: 30px; border-radius: 25px; width: 100%; max-width: 320px; border: 1px solid var(--gold); }
 
-        /* ANIMASI KELAP-KELIP DEVELOPER (TENANG) */
         @keyframes devGlow {
             0% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.1); border-color: rgba(212, 175, 55, 0.1); transform: scale(1); }
             50% { box-shadow: 0 0 15px rgba(212, 175, 55, 0.3); border-color: rgba(212, 175, 55, 0.5); transform: scale(1.01); background: rgba(212, 175, 55, 0.05); }
@@ -265,14 +263,19 @@
         async function handleLogin(e) {
             e.preventDefault();
             const role = document.getElementById('role-input').value;
-            if (document.getElementById('password-input').value === KEYS[role]) {
-                await logAction(role.toUpperCase() + '_LOGIN', role + '.html');
+            const inputPw = document.getElementById('password-input').value;
+            
+            if (inputPw === KEYS[role]) {
+                // Penyesuaian rute halaman sesuai permintaan
+                let targetPage = (role === 'admin') ? "admin.html" : "panitia.html";
+                await logAction(role.toUpperCase() + '_LOGIN', targetPage);
             } else {
                 alert("PASSKEY SALAH!");
+                document.getElementById('password-input').value = '';
             }
         }
 
-        async function handleUserAccess() { await logAction('USER_PORTAL_OPEN', 'user.html'); }
+        async function handleUserAccess() { await logAction('PORTAL', 'user.html'); }
         window.onload = initApp;
     </script>
 </body>
