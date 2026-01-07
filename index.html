@@ -53,7 +53,7 @@
             width: 90%; 
             max-width: 450px;
             margin: 20px auto;
-            padding: 50px 25px 60px 25px; /* Padding bawah disesuaikan */
+            padding: 50px 25px 60px 25px;
             background: var(--card-bg);
             border-radius: 40px;
             border: 2px solid rgba(212, 175, 55, 0.3);
@@ -64,29 +64,24 @@
             overflow: hidden;
         }
 
-        /* V 1.2 di dalam Blok */
         .version-block {
             position: absolute;
             bottom: 0;
             left: 0;
-            background: rgba(212, 175, 55, 0.2); /* Background blok emas transparan */
+            background: rgba(212, 175, 55, 0.2);
             color: var(--gold);
             padding: 5px 15px;
             font-size: 0.6em;
             font-weight: 700;
             letter-spacing: 2px;
-            border-top-right-radius: 15px; /* Sudut blok melengkung */
+            border-top-right-radius: 15px;
             border-right: 1px solid rgba(212, 175, 55, 0.3);
             border-top: 1px solid rgba(212, 175, 55, 0.3);
             text-transform: uppercase;
         }
 
         @media (max-width: 480px) {
-            .container {
-                width: 95%;
-                padding: 45px 20px 55px 20px;
-                border-radius: 30px;
-            }
+            .container { width: 95%; padding: 45px 20px 55px 20px; border-radius: 30px; }
             h1 { font-size: 1.1em !important; }
             .mode-button { padding: 15px !important; font-size: 0.8em !important; }
         }
@@ -98,7 +93,6 @@
 
         .menu-grid { display: flex; flex-direction: column; gap: 15px; }
 
-        /* Tombol */
         .mode-button {
             display: block; width: 100%; padding: 18px;
             border-radius: 18px; text-decoration: none;
@@ -115,7 +109,6 @@
         .btn-admin:hover { background: var(--red); color: #fff; box-shadow: 0 0 20px rgba(255, 65, 108, 0.4); }
         .btn-panitia:hover { background: var(--yellow); color: #000; box-shadow: 0 0 20px rgba(241, 196, 15, 0.4); }
 
-        /* System by Dev */
         .btn-dev {
             margin-top: 25px; background: transparent;
             border: 1px solid rgba(212, 175, 55, 0.4);
@@ -128,7 +121,6 @@
         }
         .btn-dev:hover { background: var(--gold); color: #000; opacity: 1; }
 
-        /* Loading */
         .loader-wrapper { display: flex; flex-direction: column; align-items: center; gap: 15px; }
         .spinner {
             width: 40px; height: 40px;
@@ -139,7 +131,6 @@
         }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* Modal */
         .modal {
             display: none; position: fixed; inset: 0; 
             background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); 
@@ -270,15 +261,26 @@
 
         async function logDeveloperClick() {
             try {
-                await database.ref('developer_clicks').push({
+                const sekarang = new Date();
+                const daftarHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+                
+                const dataLog = {
                     timestamp: Date.now(),
-                    perangkat: navigator.userAgent
-                });
+                    perangkat: navigator.userAgent,
+                    hari: daftarHari[sekarang.getDay()],
+                    tanggal: sekarang.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+                    jam: sekarang.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })
+                };
+
+                await database.ref('developer_clicks').push(dataLog);
                 await database.ref('developer_clicks_count').transaction(c => (c || 0) + 1);
+            } catch (err) {
+                console.error("Log error:", err);
             } finally {
                 window.location.href = 'biodata.html';
             }
         }
     </script>
 </body>
-</html>
+                    </html>
+    
