@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPI Road to Show Goes to School - Daftar Peserta</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+document.addEventListener("contextmenu", e => e.preventDefault());
+document.addEventListener("selectstart", e => e.preventDefault());
+document.addEventListener("keydown", e => {
+  if (
+    e.key === "F12" ||
+    (e.ctrlKey && ["u","U","c","C","x","X","s","S","a","A"].includes(e.key)) ||
+    (e.ctrlKey && e.shiftKey && ["I","i","J","j"].includes(e.key))
+  ) e.preventDefault();
+});
+</script>
+    <style>
+        /* Variabel Warna Merah-Putih-Abu */
+        :root {
+            --color-primary: #dc3545; /* Merah Utama (Aksi) */
+            --color-text: #343a40; /* Abu Tua (Teks) */
+            --color-background: #f0f4f8; /* Background Halaman Lebih Soft */
+            --color-card-bg: #ffffff; /* Putih (Background Kontainer) */
+            --color-accent: #6c757d; /* Abu Sedang (Garis/Border) */
+            --color-light-accent: #dee2e6; /* Abu Terang */
+            --color-header-bg: #dc3545; /* Merah untuk Header Tabel */
+            --color-button: #007bff; /* Warna Biru untuk Tombol Sekunder */
+        }
+        
+        body { 
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 0;
+            background-color: var(--color-background); 
+            color: var(--color-text);
+            line-height: 1.6;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .container { 
+            max-width: 1000px; 
+            margin: 20px auto; 
+            padding: 25px; 
+            background: var(--color-card-bg); 
+            border-radius: 12px; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1); /* Bayangan lebih halus */
+        }
+        
+        h1 { 
+            color: var(--color-primary); 
+            font-size: 1.8em;
+            border-bottom: 3px solid var(--color-primary); 
+            padding-bottom: 15px; 
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        /* Statistik Counter */
+        .statistik {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #f7f7f7; /* Background Netral */
+            color: var(--color-text);
+            border: 1px solid var(--color-light-accent);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .statistik strong {
+            color: var(--color-primary);
+            font-size: 1.5em;
+        }
+        
+        /* Kontrol Filter & Tombol Kembali */
+        .controls-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+        .controls-container .controls {
+             display: flex;
+             gap: 10px;
+             align-items: center;
+        }
+        .controls label {
+            font-weight: 600;
+        }
+        .controls select {
+            padding: 10px;
+            border: 1px solid var(--color-accent);
+            border-radius: 6px;
+            cursor: pointer;
+            min-width: 150px;
+            transition: border-color 0.3s;
+        }
+        .controls select:focus {
+            border-color: var(--color-primary);
+            outline: none;
+        }
+        
+        /* Tombol Kembali */
+        .back-button {
+            padding: 10px 18px;
+            background-color: var(--color-button); /* Tombol sekunder warna biru */
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Tabel Responsif Container */
+        .table-container {
+            max-height: 70vh; 
+            overflow-x: auto; 
+            overflow-y: auto;
+            border: 1px solid var(--color-light-accent);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            
+            /* --- PERUBAHAN UTAMA: Memindahkan scrollbar ke kiri --- */
+            direction: rtl; 
+            /* -------------------------------------------------- */
+        }
+        .data-peserta table { 
+            width: 100%; 
+            min-width: 600px; 
+            border-collapse: collapse; 
+            
+            /* --- MENGEMBALIKAN ARAH TEKS KE KIRI KE KANAN --- */
+            direction: ltr; 
+            /* -------------------------------------------------- */
+        }
+        .data-peserta th, .data-peserta td { 
+            border: 1px solid var(--color-light-accent); 
+            padding: 14px 10px; 
+            text-align: left; 
+            font-size: 0.9em; 
+        }
+        .data-peserta th {
+            background-color: var(--color-header-bg);
+            color: white;
+            position: sticky; 
+            top: 0;
+            z-index: 10;
+            font-weight: bold;
+        }
+        .data-peserta tr:nth-child(even) {
+            background-color: #fcfcfc;
+        }
+        .data-peserta td strong {
+            color: var(--color-primary);
+        }
+
+        /* Responsif HP */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 15px;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+            .controls-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .controls-container .controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 5px;
+            }
+            .controls-container .back-button {
+                width: 100%;
+                margin-top: 10px;
+            }
+            .statistik {
+                flex-direction: column;
+                gap: 5px;
+            }
+            .statistik strong {
+                font-size: 1.3em;
+            }
+
+            /* Di HP, scroll horizontal tetap normal */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Daftar Peserta Road to Show</h1>
+        
+        <div class="statistik">
+            <span>Jumlah Peserta Terdaftar:</span>
+            <strong><span id="totalPeserta">0</span> Orang</strong>
+        </div>
+
+        <div class="controls-container">
+            <div class="controls">
+                <label for="filterOrder">Urutkan Pendaftaran:</label>
+                <select id="filterOrder" onchange="renderPesertaTable()">
+                    <option value="terbaru">Terbaru-Terlama</option>
+                    <option value="terlama">Terlama-Terbaru</option>
+                </select>
+            </div>
+            
+            <button class="back-button" onclick="goToCheckResult()">Kembali ke Cek Hasil
+            </button>
+        </div>
+
+        <div class="data-peserta table-container" id="pesertaList">Memuat data peserta...</div>
+    </div>
+
+    <script>
+        // =========================================================================
+        // --- KONFIGURASI FIREBASE & INISIALISASI ---
+        // =========================================================================
+        const FIREBASE_CONFIG = {
+            apiKey: "AIzaSyDpPEkKbEt6b_v2OWlBfGuaVQpBg2-RWR4",
+            authDomain: "cwu-gen-2.firebaseapp.com",
+            databaseURL: "https://cwu-gen-2-default-rtdb.firebaseio.com",
+            projectId: "cwu-gen-2",
+            storageBucket: "cwu-gen-2.appspot.com",
+            messagingSenderId: "40585612014",
+            appId: "1:40585612014:web:c88141fee3699aca68181ff"
+        };
+        firebase.initializeApp(FIREBASE_CONFIG);
+        const database = firebase.database();
+        
+        let allSekolah = {};
+        let allPeserta = {}; 
+
+        function initializeDataListeners() {
+            // Listener untuk Sekolah (untuk mendapatkan nama sekolah)
+            database.ref('sekolah').on('value', (snapshot) => {
+                allSekolah = snapshot.val() || {};
+                renderPesertaTable(); 
+            });
+            
+            // Listener untuk Peserta (Realtime)
+            database.ref('peserta').on('value', (snapshot) => {
+                allPeserta = snapshot.val() || {}; 
+                renderPesertaTable(); 
+                updateTotalCounter();
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+             initializeDataListeners();
+        });
+
+        function goToCheckResult() {
+            window.location.href = 'user.html';
+        }
+
+        function updateTotalCounter() {
+            const total = Object.keys(allPeserta).length;
+            document.getElementById('totalPeserta').textContent = total;
+        }
+
+        /**
+         * Render tabel peserta dengan opsi filter urutan.
+         */
+        function renderPesertaTable() {
+            const pesertaListDiv = document.getElementById('pesertaList');
+            if (!pesertaListDiv) return;
+
+            const filterOrder = document.getElementById('filterOrder').value;
+            
+            const allPesertaKeys = Object.keys(allPeserta);
+            let sortedPesertaKeys;
+
+            if (filterOrder === 'terbaru') {
+                // Terbaru di Atas (Descending)
+                sortedPesertaKeys = allPesertaKeys.sort((a, b) => b.localeCompare(a));
+            } else { // 'terlama'
+                // Terlama di Atas (Ascending)
+                sortedPesertaKeys = allPesertaKeys.sort((a, b) => a.localeCompare(b));
+            }
+            
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Kode Acak</th>
+                            <th>Nama</th>
+                            <th>Sekolah</th>
+                            <th>Jenis Kelamin</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            let noUrut = 1;
+            if (sortedPesertaKeys.length === 0) {
+                 html += `<tr><td colspan="5" style="text-align: center; color: var(--color-accent);">Belum ada peserta terdaftar.</td></tr>`;
+            } else {
+                for (const idPeserta of sortedPesertaKeys) {
+                    const p = allPeserta[idPeserta];
+                    const sekolahNama = allSekolah[p.idSekolah]?.namaSekolah || 'N/A';
+    
+                    html += `
+                        <tr>
+                            <td>${noUrut++}</td>
+                            <td><strong>${p.kodePeserta || '--'}</strong></td>
+                            <td>${p.nama}</td>
+                            <td>${sekolahNama}</td>
+                            <td>${p.jenisKelamin}</td>
+                        </tr>
+                    `;
+                }
+            }
+            
+            
+            html += '</tbody></table>';
+            pesertaListDiv.innerHTML = html;
+            updateTotalCounter();
+        }
+    </script>
+</body>
+</html>
