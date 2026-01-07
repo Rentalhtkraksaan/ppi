@@ -47,7 +47,6 @@
             position: relative; overflow: hidden;
         }
 
-        /* V 1.2 Blok Pojok Kiri Bawah */
         .version-block {
             position: absolute; bottom: 0; left: 0;
             background: rgba(212, 175, 55, 0.2); color: var(--gold);
@@ -60,7 +59,6 @@
         h1 { color: var(--gold); font-size: 1.4em; text-align: center; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 10px; }
         h2 { color: var(--text-muted); font-size: 0.8em; text-align: center; margin-bottom: 30px; letter-spacing: 1px; }
 
-        /* Logout Button */
         .logout-btn {
             position: absolute; top: 20px; right: 25px;
             background: rgba(255, 65, 108, 0.1); border: 1px solid var(--red);
@@ -69,7 +67,6 @@
         }
         .logout-btn:hover { background: var(--red); color: white; }
 
-        /* Tabs Navigation */
         .tab-nav {
             display: flex; justify-content: center; gap: 10px; margin-bottom: 25px;
             flex-wrap: wrap;
@@ -84,7 +81,6 @@
             box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
         }
 
-        /* Form & Inputs */
         .panitia-tab-content { display: none; animation: fadeIn 0.4s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -104,7 +100,6 @@
             width: 100%; border-radius: 12px; font-weight: 700; cursor: pointer;
         }
 
-        /* Tables */
         .search-area { margin-bottom: 15px; }
         .search-area input { margin: 0; border-radius: 15px; background: rgba(255,255,255,0.05); }
 
@@ -116,7 +111,6 @@
         td { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85em; }
         tr:hover { background: rgba(212, 175, 55, 0.02); }
 
-        /* Auto-save Status */
         .input-with-status { display: flex; align-items: center; gap: 8px; }
         .input-with-status input { width: 80px; margin: 0; padding: 5px 10px; text-align: center; }
         .save-status { font-size: 0.8em; font-weight: bold; min-width: 20px; }
@@ -160,28 +154,27 @@
             </div>
             
             <div class="search-area">
-                <input type="text" id="searchCrud" placeholder="🔍 Cari Nama / Kode..." onkeyup="filterTable('inputPeserta', 'searchCrud', 2, 1)">
+                <input type="text" id="searchCrud" placeholder="🔍 Cari Nama / Kode..." onkeyup="filterTable('panitiaCrudList', 'searchCrud')">
             </div>
             <div class="table-container" id="panitiaCrudList"></div>
         </div>
 
         <div id="inputBB" class="panitia-tab-content">
             <div class="search-area">
-                <input type="text" id="searchBB" placeholder="🔍 Cari Nama / Kode..." onkeyup="filterTable('inputBB', 'searchBB', 2, 1)">
+                <input type="text" id="searchBB" placeholder="🔍 Cari Nama / Kode..." onkeyup="filterTable('panitiaBBList', 'searchBB')">
             </div>
             <div class="table-container" id="panitiaBBList"></div>
         </div>
 
         <div id="inputTB" class="panitia-tab-content">
             <div class="search-area">
-                <input type="text" id="searchTB" placeholder="🔍 Cari Nama / Kode..." onkeyup="filterTable('inputTB', 'searchTB', 2, 1)">
+                <input type="text" id="searchTB" placeholder="🔍 Cari Nama / Kode..." onkeyup="filterTable('panitiaTBList', 'searchTB')">
             </div>
             <div class="table-container" id="panitiaTBList"></div>
         </div>
     </div>
 
     <script>
-        // --- FIREBASE CONFIG ---
         const FIREBASE_CONFIG = {
             apiKey: "AIzaSyDpPEkKbEt6b_v2OWlBfGuaVQpBg2-RWR4",
             authDomain: "cwu-gen-2.firebaseapp.com",
@@ -193,19 +186,22 @@
         };
         firebase.initializeApp(FIREBASE_CONFIG);
         const database = firebase.database();
-        const USER_ID = "PAN_001"; 
 
-        let allSekolah = {}, allPeserta = {}, allPenilaian = {}, allKetentuan = {};
+        // Ambil nama dari portal depan
+        const CURRENT_USER = localStorage.getItem('ppi_nama') || "Panitia";
 
         function checkAuth() {
-            if (localStorage.getItem('role') !== 'panitia' || localStorage.getItem('loggedIn') !== 'true') {
+            // Perbaikan: Hanya cek ppi_nama, tidak perlu loggedIn=true manual
+            if (!localStorage.getItem('ppi_nama')) {
                  window.location.href = 'index.html';
             }
         }
+
         function logout() {
-            localStorage.clear();
             window.location.href = 'index.html';
         }
+
+        let allSekolah = {}, allPeserta = {}, allPenilaian = {}, allKetentuan = {};
 
         function initializeDataListeners() {
             database.ref('ketentuanLulus').on('value', s => { allKetentuan = s.val() || {}; refreshViews(); });
@@ -215,7 +211,7 @@
         }
 
         function refreshViews() {
-            const activeTab = document.querySelector('.panitia-tab-content[style*="block"]').id;
+            const activeTab = document.querySelector('.panitia-tab-content[style*="block"]')?.id;
             if (activeTab === 'inputPeserta') renderPanitiaCrudTable();
             if (activeTab === 'inputBB') renderPanitiaBBTable();
             if (activeTab === 'inputTB') renderPanitiaTBTable();
@@ -229,9 +225,9 @@
             refreshViews();
         }
 
-        // --- CORE LOGIC ---
         function updateSekolahDropdowns() {
             const sel = document.getElementById('panitiaSekolahSelect');
+            if(!sel) return;
             sel.innerHTML = '<option value="">Pilih Sekolah</option>';
             Object.keys(allSekolah).forEach(k => {
                 if (allSekolah[k].statusPenilaian === 'Dibuka') {
@@ -252,42 +248,48 @@
             return key ? { ...allPenilaian[key], idPenilaian: key } : {};
         }
 
-        function savePenilaian(idPeserta, field) {
+        async function savePenilaian(idPeserta, field) {
             const input = document.getElementById(`${field.toLowerCase()}-input-${idPeserta}`);
             const status = document.getElementById(`status-${field.toLowerCase()}-${idPeserta}`);
             const val = parseFloat(input.value);
+            if (isNaN(val)) return;
+
             const p = allPeserta[idPeserta];
             const exist = getPenilaianData(idPeserta);
+            const now = new Date();
 
             status.textContent = '⏳';
-            status.style.color = 'var(--gold)';
+            
+            // Format hari Indonesia untuk kepo.html
+            const formatHari = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
             const data = {
-                beratBadan: field === 'BB' ? val : (exist.beratBadan || null),
-                tinggiBadan: field === 'TB' ? val : (exist.tinggiBadan || null),
+                beratBadan: field === 'BB' ? val : (exist.beratBadan || 0),
+                tinggiBadan: field === 'TB' ? val : (exist.tinggiBadan || 0),
                 idPeserta: idPeserta,
-                idAdmin: USER_ID,
-                tglPenilaian: new Date().toISOString()
+                adminInput: CURRENT_USER,
+                tanggal: formatHari,
+                jam: now.toLocaleTimeString('id-ID', {hour12:false}),
+                lastUpdate: now.toISOString()
             };
 
-            // Hitung kelulusan
-            if (data.beratBadan && data.tinggiBadan) {
+            // Hitung Kelulusan otomatis
+            if (data.beratBadan > 0 && data.tinggiBadan > 0) {
                 const k = allKetentuan[p.jenisKelamin];
-                data.hasilLulus = (data.beratBadan >= k.minBerat && data.beratBadan <= k.maxBerat && 
-                                   data.tinggiBadan >= k.minTinggi && data.tinggiBadan <= k.maxTinggi);
-            } else {
-                data.hasilLulus = false;
+                if(k) {
+                    data.hasilLulus = (data.beratBadan >= k.minBerat && data.beratBadan <= k.maxBerat && 
+                                       data.tinggiBadan >= k.minTinggi && data.tinggiBadan <= k.maxTinggi);
+                }
             }
 
             const ref = exist.idPenilaian ? database.ref('penilaian/'+exist.idPenilaian) : database.ref('penilaian').push();
-            ref.update(data).then(() => {
-                status.textContent = '✔';
-                status.style.color = 'var(--success)';
-                setTimeout(() => { status.textContent = ''; }, 2000);
-            });
+            await ref.update(data);
+            
+            status.textContent = '✔';
+            status.style.color = 'var(--success)';
+            setTimeout(() => { status.textContent = ''; }, 2000);
         }
 
-        // --- RENDER TABLES ---
         function renderPanitiaCrudTable() {
             let h = `<table><thead><tr><th>No</th><th>Kode</th><th>Nama</th><th>Sekolah</th></tr></thead><tbody>`;
             Object.keys(allPeserta).sort().forEach((k, i) => {
@@ -319,13 +321,12 @@
             document.getElementById('panitiaTBList').innerHTML = h + `</tbody></table>`;
         }
 
-        function filterTable(contId, inpId, nameIdx, codeIdx) {
-            const val = document.getElementById(inpId).value.toUpperCase();
-            const rows = document.getElementById(contId).querySelectorAll('tr');
+        function filterTable(containerId, inputId) {
+            const val = document.getElementById(inputId).value.toUpperCase();
+            const rows = document.getElementById(containerId).querySelectorAll('tr');
             rows.forEach((r, i) => {
                 if (i === 0) return;
-                const txt = r.innerText.toUpperCase();
-                r.style.display = txt.includes(val) ? '' : 'none';
+                r.style.display = r.innerText.toUpperCase().includes(val) ? '' : 'none';
             });
         }
 
@@ -338,12 +339,15 @@
                 kodePeserta: generateRandomCode()
             };
             database.ref('peserta').push(data).then(() => {
-                alert('Peserta berhasil didaftarkan! Kode: ' + data.kodePeserta);
+                alert('Berhasil! Kode Peserta: ' + data.kodePeserta);
                 document.getElementById('panitiaInputForm').reset();
             });
         }
 
-        document.addEventListener('DOMContentLoaded', () => { checkAuth(); initializeDataListeners(); });
+        document.addEventListener('DOMContentLoaded', () => { 
+            checkAuth(); 
+            initializeDataListeners(); 
+        });
     </script>
 </body>
 </html>
