@@ -406,7 +406,17 @@ document.addEventListener("keydown", e => {
         let allPenilaian = {};
         let allKetentuan = {};
         
-        
+        function checkAuth() {
+    const role = localStorage.getItem('role');
+    const isLoggedIn = localStorage.getItem('loggedIn');
+
+    if (role !== 'admin' || isLoggedIn !== 'true') {
+        console.warn("Peringatan: Kamu tidak terdeteksi sebagai Admin. Data mungkin tidak muncul jika Rules Firebase terkunci.");
+        // window.location.href = 'index.html'; // SEMENTARA DIMATIKAN AGAR TIDAK KEPENTAL
+    } else {
+        console.log("Auth Berhasil: Selamat datang Admin.");
+    }
+}
         
         function logout() {
             localStorage.removeItem('role');
