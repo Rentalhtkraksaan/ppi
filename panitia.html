@@ -187,11 +187,9 @@
         firebase.initializeApp(FIREBASE_CONFIG);
         const database = firebase.database();
 
-        // Ambil nama dari portal depan
         const CURRENT_USER = localStorage.getItem('ppi_nama') || "Panitia";
 
         function checkAuth() {
-            // Perbaikan: Hanya cek ppi_nama, tidak perlu loggedIn=true manual
             if (!localStorage.getItem('ppi_nama')) {
                  window.location.href = 'index.html';
             }
@@ -259,8 +257,6 @@
             const now = new Date();
 
             status.textContent = '⏳';
-            
-            // Format hari Indonesia untuk kepo.html
             const formatHari = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
             const data = {
@@ -273,7 +269,6 @@
                 lastUpdate: now.toISOString()
             };
 
-            // Hitung Kelulusan otomatis
             if (data.beratBadan > 0 && data.tinggiBadan > 0) {
                 const k = allKetentuan[p.jenisKelamin];
                 if(k) {
@@ -291,17 +286,18 @@
         }
 
         function renderPanitiaCrudTable() {
-            let h = `<table><thead><tr><th>No</th><th>Kode</th><th>Nama</th><th>Sekolah</th></tr></thead><tbody>`;
-            Object.keys(allPeserta).sort().forEach((k, i) => {
+            let h = `<table><thead><tr><th>No</th><th>Kode</th><th>Nama</th><th>JK</th><th>Sekolah</th></tr></thead><tbody>`;
+            // Menggunakan Object.keys tanpa .sort() agar urutan tetap sesuai database (dari atas ke bawah)
+            Object.keys(allPeserta).forEach((k, i) => {
                 const p = allPeserta[k];
-                h += `<tr><td>${i+1}</td><td><b style="color:var(--blue)">${p.kodePeserta}</b></td><td>${p.nama}</td><td>${allSekolah[p.idSekolah]?.namaSekolah || '-'}</td></tr>`;
+                h += `<tr><td>${i+1}</td><td><b style="color:var(--blue)">${p.kodePeserta}</b></td><td>${p.nama}</td><td>${p.jenisKelamin || '-'}</td><td>${allSekolah[p.idSekolah]?.namaSekolah || '-'}</td></tr>`;
             });
             document.getElementById('panitiaCrudList').innerHTML = h + `</tbody></table>`;
         }
 
         function renderPanitiaBBTable() {
             let h = `<table><thead><tr><th>No</th><th>Kode</th><th>Nama (JK)</th><th>Berat (kg)</th></tr></thead><tbody>`;
-            Object.keys(allPeserta).sort().forEach((k, i) => {
+            Object.keys(allPeserta).forEach((k, i) => {
                 const p = allPeserta[k];
                 const v = getPenilaianData(k).beratBadan || '';
                 h += `<tr><td>${i+1}</td><td>${p.kodePeserta}</td><td>${p.nama} <small>(${p.jenisKelamin})</small></td>
@@ -312,7 +308,7 @@
 
         function renderPanitiaTBTable() {
             let h = `<table><thead><tr><th>No</th><th>Kode</th><th>Nama (JK)</th><th>Tinggi (cm)</th></tr></thead><tbody>`;
-            Object.keys(allPeserta).sort().forEach((k, i) => {
+            Object.keys(allPeserta).forEach((k, i) => {
                 const p = allPeserta[k];
                 const v = getPenilaianData(k).tinggiBadan || '';
                 h += `<tr><td>${i+1}</td><td>${p.kodePeserta}</td><td>${p.nama} <small>(${p.jenisKelamin})</small></td>
