@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Biodata Developer - Premium Dark</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&amp;display=swap" rel="stylesheet" />
     <script>
-        // Security Script
+      // Security Script
         document.addEventListener("contextmenu", e => e.preventDefault());
         document.addEventListener("selectstart", e => e.preventDefault());
         document.addEventListener("keydown", e => {
@@ -18,10 +16,35 @@
                 (e.ctrlKey && e.shiftKey && ["I","i","J","j"].includes(e.key))
             ) e.preventDefault();
         });
-    </script>
 
+        // Fungsi Hitung Mundur 15 Detik & Barcode
+        function closeAndShowBarcode() {
+            const overlay = document.getElementById('barcodeOverlay');
+            const timerElement = document.getElementById('timer');
+            const skipBtn = document.getElementById('skipBtn');
+            overlay.style.display = 'flex';
+            
+            let timeLeft = 15;
+            timerElement.innerText = timeLeft;
+
+            const countdown = setInterval(() => {
+                timeLeft--;
+                timerElement.innerText = timeLeft;
+                
+                // Munculkan tombol skip di detik ke 10
+                if (timeLeft <= 5) {
+                    skipBtn.style.display = 'inline-block';
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    window.location.href = 'index.html';
+                }
+            }, 1000);
+        }
+    </script>
     <style>
-        :root {
+      :root {
             --bg-gradient: radial-gradient(circle at center, #2c2c2c 0%, #050505 100%);
             --card-bg: #111111;
             --gold: #d4af37;
@@ -46,6 +69,9 @@
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
         }
+        a{
+            text-decoration: none;
+        }
 
         .bg-glow {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -53,25 +79,52 @@
             z-index: -1;
         }
 
-        /* ================= CONTAINER ================= */
+        /* General Layout: Horizontal (Laptop), Vertikal (HP) */
         .container {
             width: 90%;
-            max-width: 700px;
-            margin: 100px auto 50px auto;
+            max-width: 1000px;
+            margin: 50px auto;
             padding: 40px;
             background: var(--card-bg);
             border-radius: 40px;
             border: 2px solid rgba(212, 175, 55, 0.3);
-            text-align: center;
+            display: flex;
+            flex-direction: row; /* Horizontal Default */
+            gap: 40px;
             box-shadow: 0 40px 100px rgba(0,0,0,0.8);
             position: relative;
+            align-items: flex-start;
         }
 
-        /* ================= FOTO PROFIL ================= */
+        .profile-side {
+            flex: 1;
+            text-align: center;
+            position: sticky;
+            top: 20px;
+        }
+
+        .info-side {
+            flex: 1.8;
+            text-align: left;
+        }
+
+        @media (max-width: 850px) {
+            .container { 
+                flex-direction: column; /* Vertikal untuk HP */
+                margin-top: 100px;
+                padding: 30px 20px;
+            }
+            .profile-side { 
+                position: relative; 
+                top: 0;
+                width: 100%;
+            }
+            .photo-wrapper { margin-top: -80px; }
+        }
+
         .photo-wrapper {
             display: flex;
             justify-content: center;
-            margin-top: -110px;
             margin-bottom: 20px;
         }
 
@@ -85,32 +138,25 @@
             background: #222;
         }
 
-        /* ================= TYPOGRAPHY ================= */
         h1 {
             color: var(--gold);
             font-size: 1.8em;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            margin: 15px 0 30px;
+            margin: 10px 0;
             font-weight: 700;
         }
 
         h2 {
             font-size: 1.1em;
             color: var(--blue);
-            text-align: left;
             text-transform: uppercase;
             letter-spacing: 2px;
             border-left: 4px solid var(--blue);
-            padding-left: 15px;
-            margin: 40px 0 20px;
+            padding-left: 12px;
+            margin: 30px 0 20px;
         }
 
-        .developer-info {
-            text-align: left;
-        }
-
-        /* ================= INFO GROUPS ================= */
         .info-item {
             display: flex;
             justify-content: space-between;
@@ -118,44 +164,52 @@
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
-        .info-item strong {
+        .info-item strong { color: var(--text-muted); font-weight: 400; font-size: 0.9em; }
+        .info-item span, .info-item a { color: var(--text); font-weight: 600; text-decoration: none; text-align: right; }
+        .info-item a { color: var(--gold); }
+
+        /* Kontainer Prestasi Rapi & Lurus */
+        .achievement-container {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 10px;
+        }
+
+        .achievement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .achievement-desc {
+            display: block;
+            font-size: 0.85em;
             color: var(--text-muted);
-            font-weight: 400;
-            font-size: 0.9em;
+            line-height: 1.4;
+            text-align: left;
         }
 
-        .info-item span, .info-item a {
-            color: var(--text);
-            font-weight: 600;
-            text-decoration: none;
-            text-align: right;
+        .btn-data {
+            background: var(--gold);
+            color: #000 !important;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.75em;
+            font-weight: 700;
+            text-transform: uppercase;
         }
 
-        .info-item a {
-            color: var(--gold);
-            transition: 0.3s;
-        }
-
-        .info-item a:hover {
-            color: var(--blue);
-            text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
-        }
-
-        /* ================= LISTS ================= */
-        ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
+        ul { list-style: none; padding: 0; margin: 0; }
         li {
             position: relative;
             padding-left: 25px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             color: var(--text);
             font-size: 0.95em;
         }
-
         li::before {
             content: "▹";
             position: absolute;
@@ -173,7 +227,6 @@
             text-transform: uppercase;
         }
 
-        /* ================= BUTTON ================= */
         .back-button {
             width: 100%;
             padding: 18px;
@@ -183,112 +236,146 @@
             border-radius: 20px;
             cursor: pointer;
             font-weight: 700;
-            font-family: 'Poppins', sans-serif;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-top: 50px;
-            transition: all 0.4s;
+            margin-top: 40px;
+            transition: 0.4s;
         }
 
-        .back-button:hover {
-            background: var(--gold);
-            color: #000;
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
-            transform: translateY(-3px);
+        .back-button:hover { background: var(--gold); color: white; box-shadow: 0 0 30px rgba(212, 175, 55, 0.4); }
+
+        /* OVERLAY BARCODE */
+        #barcodeOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            text-align: center;
+            padding: 20px;
         }
 
-        /* ================= MOBILE OPTIMIZATION ================= */
-        @media (max-width: 600px) {
-            .container {
-                width: 95%;
-                padding: 30px 20px;
-                border-radius: 30px;
-                margin-top: 80px;
-            }
+        /* bc.jpg Ukuran 1:1 */
+        #barcodeOverlay img {
+            width: 250px;
+            height: 250px;
+            object-fit: cover;
+            border: 5px solid var(--gold);
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
 
-            .photo-wrapper { margin-top: -90px; }
-            .profile-photo { width: 130px; height: 130px; }
-
-            h1 { font-size: 1.4em; }
-            h2 { font-size: 1em; }
-
-            .info-item {
-                flex-direction: column;
-                gap: 5px;
-            }
-
-            .info-item span, .info-item a {
-                text-align: left;
-                font-size: 0.95em;
-            }
+        #skipBtn {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 25px;
+            background: gold;
+            color: black;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
         }
     </style>
-</head>
-<body>
-
-<div class="bg-glow"></div>
-
-<div class="container">
-    <div class="photo-wrapper">
-        <img src="IMG_20251214_222804.jpg" 
-             alt="Achmad Furqon Aditya Putra" 
-             class="profile-photo">
-    </div>
-
-    <h1>Biodata Developer</h1>
-
-    <div class="developer-info">
-        <h2>Informasi Dasar</h2>
-        <div class="info-item"><strong>Nama Lengkap</strong> <span>Achmad Furqon Aditya Putra</span></div>
-        <div class="info-item"><strong>NRA</strong> <span>2023.13.28.034</span></div>
-        <div class="info-item"><strong>Angkatan PPI</strong> <span>2023</span></div>
-        <div class="info-item"><strong>Jabatan Aktif</strong> <span style="color: var(--red);">KWH</span></div>
-
-        <h2>Kontak & Media Sosial</h2>
-        <div class="info-item">
-            <strong>WhatsApp</strong>
-            <a href="https://wa.me/6285176871609" target="_blank">0851-7687-1609</a>
+  </head>
+  <body>
+    <div class="bg-glow"></div>
+    
+    <div class="container">
+      <div class="profile-side">
+        <div class="photo-wrapper">
+          <img src="IMG_20251214_222804.jpg" alt="Achmad Furqon Aditya Putra" class="profile-photo" />
         </div>
-        <div class="info-item">
-            <strong>Instagram</strong>
-            <a href="https://instagram.com/_.adityaptra" target="_blank">@_.adityaptra</a>
-        </div>
+        <h1>Biodata Developer</h1>
 
-        <h2>Organisasi & Pengalaman</h2>
-        <span class="sub-title">Jabatan Organisasi Aktif</span>
-        <ul>
+      </div>
+
+      <div class="info-side">
+        <div class="developer-info">
+          <h2>Informasi Dasar</h2>
+          <div class="info-item"><strong>Nama Lengkap</strong><span>Achmad Furqon Aditya Putra</span></div>
+          <div class="info-item"><strong>NRA</strong><span>2023.13.28.034</span></div>
+          <div class="info-item"><strong>Angkatan PPI</strong><span>2023</span></div>
+          <div class="info-item"><strong>Jabatan Aktif</strong><span style="color: var(--red);">KWH</span></div>
+
+          <h2>Kontak &amp; Media Sosial</h2>
+          <div class="info-item"><strong>WhatsApp</strong><a href="https://wa.me/6285176871609" target="_blank">0851-7687-1609</a></div>
+          <div class="info-item"><strong>Instagram</strong><a href="https://instagram.com/_.adityaptra" target="_blank">@_.adityaptra</a></div>
+
+          <h2>Prestasi Terpilih</h2>
+          <div class="achievement-container">
+            <div class="achievement-header">
+              <strong style="color: var(--gold)">Komandan Upacara HARDIKNAS</strong>
+              <a href="https://www.kabarpas.com/tari-glipang-sewu-semarakkan-peringatan-hardiknas-di-probolinggo/" target="_blank" class="btn-data">Lihat</a>
+            </div>
+            <span class="achievement-desc">
+              Dipercaya menjadi Komandan Upacara pada Peringatan Hari Pendidikan Nasional di alun alun kraksaan Tahun 2024.
+            </span>
+          </div>
+
+          <h2>Organisasi &amp; Pengalaman</h2>
+          <span class="sub-title">Jabatan Organisasi Aktif</span>
+          <ul>
             <li>Vice President CLUB WIRAUSAHA UNUJA</li>
             <li>HEAD OF DEPARTMENT BEM Fakultas Teknik</li>
             <li>Speaker PMB UNUJA</li>
             <li>KWH PPI</li>
             <li>Cadreization HIMATIKA</li>
             <li>Media Creative GYN</li>
-        </ul>
-
-        <span class="sub-title">Pengalaman Organisasi</span>
-        <ul>
+          </ul>
+          
+          <span class="sub-title">Pengalaman Organisasi</span>
+          <ul>
             <li>Ketua Angkatan Paskibraka (2023)</li>
             <li>Bidang Kepelatihan Kompas Matura (2023)</li>
             <li>Volunteer Senyum Anak Nusantara (2025)</li>
             <li>Networking CLUB WIRAUSAHA UNUJA (2024)</li>
-        </ul>
+          </ul>
 
-        <h2>Proyek Digital</h2>
-        <ul>
+          <h2>Proyek Digital</h2>
+          <ul>
             <li>Website Kasir Dinamis</li>
             <li>Website PPI Roadshow</li>
             <li>Website Ormawa CLUB WIRAUSAHA UNUJA</li>
             <li>Website Rental HT Kraksaan</li>
-        </ul>
+          </ul>
+                  <p style="font-size:0.7em; color:var(--text-muted); padding: 0 15px;">
+            Website ini dikembangkan untuk mendukung kegiatan PPI Road to Show Goes to School.
+        </p>
+        <button class="back-button" onclick="closeAndShowBarcode()">
+            KEMBALI KE PORTAL
+        </button>
+        </div>
+      </div>
+    </div>
+<div id="barcodeOverlay" style="text-align: center; background: rgba(0,0,0,0.95); padding: 30px; border-radius: 20px;">
+    <h3 style="color: white; margin: 0; letter-spacing: 2px; font-size: 1.2rem;">SCAN UNTUK LIAT DATA PUBLIK</h3>
+    
+    <div style="position: relative; display: inline-block; margin-top: 20px;">
+        <img src="bc.jpg" alt="Barcode" style="width: 220px; height: 220px; border-radius: 12px; border: 2px solid #d4af37; display: block; box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);">
     </div>
 
-    <p style="font-size:0.7em; color:var(--text-muted); margin-top:30px; letter-spacing: 1px;">
-        Website ini dikembangkan untuk mendukung kegiatan PPI Road to Show Goes to School.
-    </p>
-    <button class="back-button" onclick="window.location.href='index.html'">
-        KEMBALI KE PORTAL
-    </button>
+    <div style="margin-top: 20px;">
+        <p style="color: #aaa; margin: 0; font-size: 0.9rem; letter-spacing: 1px;">Kunjungi:</p>
+        <p style="color: #ffffff; margin: 5px 0 20px 0; font-family: 'Courier New', monospace; font-size: 1.1rem; background: rgba(212, 175, 55, 0.1); display: inline-block; padding: 5px 15px; border-radius: 5px; border: 1px solid rgba(212, 175, 55, 0.3);">
+            cv-aditya.vercel.app
+        </p>
+    </div>
+
+    <div style="margin-top: 10px;">
+        <p style="color: #d4af37; margin-bottom: 15px;">Kembali ke Portal dalam <span id="timer" style="font-weight: bold; font-size: 1.2rem;">15</span> detik...</p>
+        <button id="skipBtn" onclick="window.location.href='index.html'" 
+            style="background: transparent; border: 1px solid #d4af37; color: #d4af37; padding: 10px 25px; cursor: pointer; border-radius: 50px; transition: 0.3s;">
+            SKIP SEKARANG
+        </button>
+    </div>
 </div>
 
-</body>
+</div>
+
+
+  </body>
 </html>
