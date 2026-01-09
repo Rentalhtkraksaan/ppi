@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PPI Road to Show Goes to School - Dashboard Panitia</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
     <script>
         document.addEventListener("contextmenu", e => e.preventDefault());
         document.addEventListener("selectstart", e => e.preventDefault());
@@ -16,10 +14,10 @@
             if (e.key === "F12" || (e.ctrlKey && ["u","U","c","C","x","X","s","S","a","A"].includes(e.key)) || (e.ctrlKey && e.shiftKey && ["I","i","J","j"].includes(e.key))) e.preventDefault();
         });
     </script>
-
     <style>
         :root {
             --bg-gradient: radial-gradient(circle at center, #333333 0%, #050505 100%);
+            --body-bg: #1a1a1a;
             --card-bg: #111111;
             --gold: #d4af37;
             --blue: #00d2ff;
@@ -28,22 +26,36 @@
             --text: #ffffff;
             --text-muted: #aaaaaa;
             --input-bg: #1a1a1a;
+            --border-rgba: rgba(212, 175, 55, 0.3);
+            --table-hover: rgba(212, 175, 55, 0.05);
         }
 
-        * { box-sizing: border-box; }
+        /* LIGHT MODE OVERRIDE */
+        body.light-mode {
+            --bg-gradient: radial-gradient(circle at center, #f5f5f5 0%, #e0e0e0 100%);
+            --body-bg: #eeeeee;
+            --card-bg: #ffffff;
+            --input-bg: #f9f9f9;
+            --text: #222222;
+            --text-muted: #555555;
+            --border-rgba: rgba(0, 0, 0, 0.1);
+            --table-hover: rgba(0, 0, 0, 0.03);
+        }
+
+        * { box-sizing: border-box; transition: background 0.3s, color 0.3s, border-color 0.3s; }
         body {
             font-family: 'Poppins', sans-serif;
-            margin: 0; background: #1a1a1a; color: var(--text);
+            margin: 0; background: var(--body-bg); color: var(--text);
             min-height: 100vh; display: flex; justify-content: center; align-items: flex-start;
             padding: 20px 0; -webkit-tap-highlight-color: transparent;
         }
 
         .bg-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-gradient); z-index: -1; }
-
+        
         .container {
             width: 95%; max-width: 1100px; background: var(--card-bg);
-            border-radius: 40px; border: 2px solid rgba(212, 175, 55, 0.3);
-            padding: 40px 25px 60px 25px; box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+            border-radius: 40px; border: 2px solid var(--border-rgba);
+            padding: 40px 25px 60px 25px; box-shadow: 0 40px 100px rgba(0,0,0,0.2);
             position: relative; overflow: hidden;
         }
 
@@ -52,15 +64,25 @@
             background: rgba(212, 175, 55, 0.2); color: var(--gold);
             padding: 5px 15px; font-size: 0.6em; font-weight: 700;
             letter-spacing: 2px; border-top-right-radius: 15px;
-            border-right: 1px solid rgba(212, 175, 55, 0.3);
-            border-top: 1px solid rgba(212, 175, 55, 0.3);
+            border-right: 1px solid var(--border-rgba);
+            border-top: 1px solid var(--border-rgba);
         }
 
         h1 { color: var(--gold); font-size: 1.4em; text-align: center; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 10px; }
         h2 { color: var(--text-muted); font-size: 0.8em; text-align: center; margin-bottom: 30px; letter-spacing: 1px; }
 
-        .logout-btn {
+        .top-actions {
             position: absolute; top: 20px; right: 25px;
+            display: flex; gap: 10px;
+        }
+
+        .theme-toggle {
+            background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold);
+            color: var(--gold); width: 35px; height: 35px; border-radius: 10px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+
+        .logout-btn {
             background: rgba(255, 65, 108, 0.1); border: 1px solid var(--red);
             color: var(--red); padding: 5px 15px; border-radius: 10px;
             font-size: 0.7em; cursor: pointer; transition: 0.3s;
@@ -72,7 +94,7 @@
             flex-wrap: wrap;
         }
         .tab-button {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(150,150,150,0.1); border: 1px solid rgba(150,150,150,0.1);
             color: var(--text-muted); padding: 10px 20px; border-radius: 15px;
             cursor: pointer; font-size: 0.8em; font-weight: 600; transition: 0.3s;
         }
@@ -85,11 +107,11 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .input-group {
-            background: rgba(255,255,255,0.02); padding: 20px; border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.05); margin-bottom: 30px;
+            background: rgba(150,150,150,0.05); padding: 20px; border-radius: 20px;
+            border: 1px solid rgba(150,150,150,0.1); margin-bottom: 30px;
         }
         input, select {
-            background: var(--input-bg); border: 1px solid #333; color: white;
+            background: var(--input-bg); border: 1px solid var(--border-rgba); color: var(--text);
             padding: 12px; border-radius: 10px; width: 100%; margin: 8px 0 15px 0;
             font-family: 'Poppins';
         }
@@ -101,33 +123,37 @@
         }
 
         .search-area { margin-bottom: 15px; }
-        .search-area input { margin: 0; border-radius: 15px; background: rgba(255,255,255,0.05); }
+        .search-area input { margin: 0; border-radius: 15px; background: rgba(150,150,150,0.1); }
 
         .table-container {
-            overflow-x: auto; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
+            overflow-x: auto; border-radius: 20px; border: 1px solid var(--border-rgba);
+            background: var(--card-bg);
         }
         table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th { background: rgba(255,255,255,0.03); color: var(--gold); padding: 15px; text-align: left; font-size: 0.8em; text-transform: uppercase; }
-        td { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85em; }
-        tr:hover { background: rgba(212, 175, 55, 0.02); }
+        th { background: rgba(150,150,150,0.05); color: var(--gold); padding: 15px; text-align: left; font-size: 0.8em; text-transform: uppercase; }
+        td { padding: 12px 15px; border-bottom: 1px solid var(--border-rgba); font-size: 0.85em; }
+        tr:hover { background: var(--table-hover); }
 
         .input-with-status { display: flex; align-items: center; gap: 8px; }
         .input-with-status input { width: 80px; margin: 0; padding: 5px 10px; text-align: center; }
         .save-status { font-size: 0.8em; font-weight: bold; min-width: 20px; }
 
         @media (max-width: 768px) {
-            .container { padding: 50px 15px 60px 15px; }
+            .container { padding: 60px 15px 60px 15px; }
             .tab-button { flex: 1; padding: 10px 5px; font-size: 0.7em; }
+            .top-actions { top: 10px; right: 10px; }
         }
     </style>
 </head>
 <body>
-
     <div class="bg-glow"></div>
-
     <div class="container">
         <div class="version-block">V 2.0</div>
-        <button class="logout-btn" onclick="logout()">LOGOUT</button>
+        
+        <div class="top-actions">
+            <button class="theme-toggle" onclick="toggleDarkMode()" id="themeBtn">🌙</button>
+            <button class="logout-btn" onclick="logout()">LOGOUT</button>
+        </div>
 
         <h1>PANITIA DASHBOARD</h1>
         <h2>Input Data Peserta & Fisik</h2>
@@ -152,7 +178,6 @@
                     <button type="submit" class="btn-submit">DAFTARKAN PESERTA</button>
                 </form>
             </div>
-            
             <div class="search-area">
                 <input type="text" id="searchCrud" placeholder="🔍 Cari Nama / Kode..." onkeyup="filterTable('panitiaCrudList', 'searchCrud')">
             </div>
@@ -175,6 +200,24 @@
     </div>
 
     <script>
+        // --- LOGIKA THEME (LIGHT/DARK) ---
+        function toggleDarkMode() {
+            const body = document.body;
+            const btn = document.getElementById('themeBtn');
+            body.classList.toggle('light-mode');
+            
+            const isLight = body.classList.contains('light-mode');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            btn.innerHTML = isLight ? '☀️' : '🌙';
+        }
+
+        // Cek preferensi saat halaman dimuat
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+            document.getElementById('themeBtn').innerHTML = '☀️';
+        }
+
+        // --- FIREBASE & LOGIKA DASHBOARD (TIDAK BERUBAH) ---
         const FIREBASE_CONFIG = {
             apiKey: "AIzaSyDpPEkKbEt6b_v2OWlBfGuaVQpBg2-RWR4",
             authDomain: "cwu-gen-2.firebaseapp.com",
@@ -188,9 +231,8 @@
         const database = firebase.database();
 
         const CURRENT_USER = localStorage.getItem('ppi_nama') || "Panitia";
-
         function checkAuth() {
-            if (!localStorage.getItem('ppi_nama')) {
+            if (!localStorage.getItem('ppi_nama')) { 
                  window.location.href = 'index.html';
             }
         }
@@ -200,7 +242,6 @@
         }
 
         let allSekolah = {}, allPeserta = {}, allPenilaian = {}, allKetentuan = {};
-
         function initializeDataListeners() {
             database.ref('ketentuanLulus').on('value', s => { allKetentuan = s.val() || {}; refreshViews(); });
             database.ref('sekolah').on('value', s => { allSekolah = s.val() || {}; updateSekolahDropdowns(); refreshViews(); });
@@ -273,7 +314,7 @@
                 const k = allKetentuan[p.jenisKelamin];
                 if(k) {
                     data.hasilLulus = (data.beratBadan >= k.minBerat && data.beratBadan <= k.maxBerat && 
-                                       data.tinggiBadan >= k.minTinggi && data.tinggiBadan <= k.maxTinggi);
+                                        data.tinggiBadan >= k.minTinggi && data.tinggiBadan <= k.maxTinggi);
                 }
             }
 
@@ -287,7 +328,6 @@
 
         function renderPanitiaCrudTable() {
             let h = `<table><thead><tr><th>No</th><th>Kode</th><th>Nama</th><th>JK</th><th>Sekolah</th></tr></thead><tbody>`;
-            // Menggunakan Object.keys tanpa .sort() agar urutan tetap sesuai database (dari atas ke bawah)
             Object.keys(allPeserta).forEach((k, i) => {
                 const p = allPeserta[k];
                 h += `<tr><td>${i+1}</td><td><b style="color:var(--blue)">${p.kodePeserta}</b></td><td>${p.nama}</td><td>${p.jenisKelamin || '-'}</td><td>${allSekolah[p.idSekolah]?.namaSekolah || '-'}</td></tr>`;
@@ -341,9 +381,9 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => { 
-            checkAuth(); 
-            initializeDataListeners(); 
-        });
+             checkAuth(); 
+             initializeDataListeners(); 
+         });
     </script>
 </body>
 </html>
