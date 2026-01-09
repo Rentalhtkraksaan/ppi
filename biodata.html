@@ -279,6 +279,33 @@
             font-weight: 700;
             cursor: pointer;
         }
+  /* Menjaga rasio video portrait */
+  .video-portrait {
+    width: 100%;
+    max-width: 280px; 
+    border-radius: 12px;
+    border: 2px solid var(--gold);
+    display: block;
+    margin: 15px 0;
+    background-color: #000;
+  }
+
+  /* Tambahan CSS untuk menyembunyikan fungsi klik kanan download */
+  video::-internal-media-controls-download-button {
+    display:none;
+  }
+  video::-webkit-media-controls-enclosure {
+    overflow:hidden;
+  }
+  video::-webkit-media-controls-panel {
+    width: calc(100% + 30px); /* Geser menu download ke luar area */
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+  }
     </style>
   </head>
   <body>
@@ -305,16 +332,33 @@
           <div class="info-item"><strong>WhatsApp</strong><a href="https://wa.me/6285176871609" target="_blank">0851-7687-1609</a></div>
           <div class="info-item"><strong>Instagram</strong><a href="https://instagram.com/_.adityaptra" target="_blank">@_.adityaptra</a></div>
 
-          <h2>Prestasi Terpilih</h2>
-          <div class="achievement-container">
-            <div class="achievement-header">
-              <strong style="color: var(--gold)">Komandan Upacara HARDIKNAS</strong>
-              <a href="https://www.kabarpas.com/tari-glipang-sewu-semarakkan-peringatan-hardiknas-di-probolinggo/" target="_blank" class="btn-data">Lihat</a>
-            </div>
-            <span class="achievement-desc">
-              Dipercaya menjadi Komandan Upacara pada Peringatan Hari Pendidikan Nasional di alun alun kraksaan Tahun 2024.
-            </span>
-          </div>
+
+<h2>Prestasi Terpilih</h2>
+<div class="achievement-container">
+  <div class="achievement-header">
+    <strong style="color: var(--gold)">Komandan Upacara HARDIKNAS</strong>
+    <div class="btn-group">
+      <a href="https://www.kabarpas.com/tari-glipang-sewu-semarakkan-peringatan-hardiknas-di-probolinggo/" target="_blank" class="btn-data">Data asli</a>
+    </div>
+  </div>
+
+  <span class="achievement-desc">
+    Dipercaya menjadi Komandan Upacara pada Peringatan Hari Pendidikan Nasional di alun alun kraksaan Tahun 2024.
+  </span>
+
+  <video 
+    class="video-portrait"
+    controls 
+    autoplay 
+    playsinline 
+    preload="auto"
+    controlsList="nodownload" 
+    oncontextmenu="return false;">
+    <source src="video.mp4" type="video/mp4">
+    Browser Anda tidak mendukung video.
+  </video>
+</div>
+
 
           <h2>Organisasi &amp; Pengalaman</h2>
           <span class="sub-title">Jabatan Organisasi Aktif</span>
