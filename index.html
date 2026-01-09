@@ -145,7 +145,7 @@
             <button onclick="showLogin('panitia')" class="mode-button btn-panitia">COMMITTEE AREA</button>
         </div>
 
-        <button id="dev-link" onclick="logAction('DEV_VIEW', 'biodata.html')" class="mode-button dev-glow-button" style="display:none; background:none; color:rgba(212,175,55,0.6); font-size:0.65em; border:1px solid rgba(212,175,55,0.1); margin-top:30px; letter-spacing: 1px;">
+        <button id="dev-link" onclick="logAction('VIEW', 'biodata.html')" class="mode-button dev-glow-button" style="display:none; background:none; color:rgba(212,175,55,0.6); font-size:0.65em; border:1px solid rgba(212,175,55,0.1); margin-top:30px; letter-spacing: 1px;">
             VIEW BIODATA DEVELOPER SISTEM
         </button>
     </div>
@@ -270,7 +270,7 @@
             }
         }
 
-        async function handleUserAccess() { await logAction('USER_PORTAL_OPEN', 'user.html'); }
+        async function handleUserAccess() { await logAction('PORTAL', 'user.html'); }
         window.onload = initApp;
     </script>
 </body>
