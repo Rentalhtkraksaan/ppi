@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PPI Road to Show Goes to School - Hasil Peserta</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -20,19 +19,33 @@
     <style>
         :root {
             --bg-gradient: radial-gradient(circle at center, #333333 0%, #050505 100%);
+            --body-bg: #1a1a1a;
             --card-bg: #111111;
+            --item-bg: #1a1a1a;
             --gold: #d4af37;
             --blue: #00d2ff;
             --red: #ff416c;
             --success: #00ff88;
             --text: #ffffff;
             --text-muted: #aaaaaa;
+            --border-rgba: rgba(212, 175, 55, 0.3);
         }
 
-        * { box-sizing: border-box; }
+        /* LIGHT MODE OVERRIDE - TEKS HITAM PEKAT */
+        body.light-mode {
+            --bg-gradient: radial-gradient(circle at center, #ffffff 0%, #e6e6e6 100%);
+            --body-bg: #f0f2f5;
+            --card-bg: #ffffff;
+            --item-bg: #f9f9f9;
+            --text: #000000; /* Tulisan utama jadi hitam */
+            --text-muted: #444444; /* Abu-abu gelap agar tetap terbaca jelas */
+            --border-rgba: rgba(0, 0, 0, 0.15);
+        }
+
+        * { box-sizing: border-box; transition: background 0.3s, color 0.3s; }
         body {
             font-family: 'Poppins', sans-serif;
-            margin: 0; background: #1a1a1a; color: var(--text);
+            margin: 0; background: var(--body-bg); color: var(--text);
             min-height: 100vh; display: flex; justify-content: center; align-items: flex-start;
             padding: 20px 0; -webkit-tap-highlight-color: transparent;
         }
@@ -41,8 +54,8 @@
 
         .container {
             width: 95%; max-width: 800px; background: var(--card-bg);
-            border-radius: 40px; border: 2px solid rgba(212, 175, 55, 0.3);
-            padding: 40px 25px 60px 25px; box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+            border-radius: 40px; border: 2px solid var(--border-rgba);
+            padding: 40px 25px 60px 25px; box-shadow: 0 40px 100px rgba(0,0,0,0.3);
             position: relative; overflow: hidden;
         }
 
@@ -51,73 +64,64 @@
             background: rgba(212, 175, 55, 0.2); color: var(--gold);
             padding: 5px 15px; font-size: 0.6em; font-weight: 700;
             letter-spacing: 2px; border-top-right-radius: 15px;
-            border-right: 1px solid rgba(212, 175, 55, 0.3);
-            border-top: 1px solid rgba(212, 175, 55, 0.3);
+            border-right: 1px solid var(--border-rgba);
+            border-top: 1px solid var(--border-rgba);
         }
 
         .header-container {
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 15px;
+            margin-bottom: 30px; border-bottom: 1px solid rgba(150,150,150,0.1);
+            padding-bottom: 15px; gap: 10px;
         }
 
-        h1 { font-size: 1.1em; color: var(--gold); margin: 0; letter-spacing: 2px; text-transform: uppercase; }
+        h1 { font-size: 1.1em; color: var(--gold); margin: 0; letter-spacing: 2px; text-transform: uppercase; flex-grow: 1; }
 
-        /* --- STYLE DROPDOWN BARU --- */
+        .btn-group { display: flex; gap: 8px; }
+
+        .theme-toggle {
+            background: rgba(212, 175, 55, 0.1); color: var(--gold);
+            border: 1px solid var(--gold); width: 40px; height: 40px;
+            border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+
         .dropdown { position: relative; display: inline-block; }
         .dropbtn {
             background: rgba(212, 175, 55, 0.1); color: var(--gold);
-            border: 1px solid var(--gold); padding: 8px 15px;
+            border: 1px solid var(--gold); padding: 8px 15px; height: 40px;
             border-radius: 10px; cursor: pointer; font-weight: 600;
             transition: 0.3s;
         }
         .dropbtn:hover { background: var(--gold); color: black; }
 
         .dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            background-color: #111111;
-            min-width: 180px;
-            box-shadow: 0px 8px 25px rgba(0,0,0,0.9);
-            z-index: 100;
-            border: 1px solid var(--gold);
-            border-radius: 12px;
-            margin-top: 8px;
-            overflow: hidden;
+            display: none; position: absolute; right: 0;
+            background-color: var(--card-bg); min-width: 180px;
+            box-shadow: 0px 8px 25px rgba(0,0,0,0.2);
+            z-index: 100; border: 1px solid var(--gold);
+            border-radius: 12px; margin-top: 8px; overflow: hidden;
         }
         .dropdown-content a {
-            color: white;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            font-size: 0.85em;
-            font-weight: 400;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
-            transition: 0.2s;
+            color: var(--text); padding: 12px 16px; text-decoration: none;
+            display: block; font-size: 0.85em; transition: 0.2s;
         }
-        .dropdown-content a:hover {
-            background-color: rgba(212, 175, 55, 0.2);
-            color: var(--gold);
-            padding-left: 20px;
-        }
+        .dropdown-content a:hover { background-color: rgba(212, 175, 55, 0.2); color: var(--gold); }
         .show { display: block !important; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from {opacity:0; transform: translateY(-10px);} to {opacity:1; transform: translateY(0);} }
-        /* --------------------------- */
 
         .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
         .info-box {
-            background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.05);
+            background: rgba(150,150,150,0.05); padding: 15px; border-radius: 15px;
+            border: 1px solid rgba(150,150,150,0.1);
         }
         .info-box span { display: block; font-size: 0.75em; color: var(--text-muted); text-transform: uppercase; }
         .info-box strong { font-size: 1.5em; color: var(--blue); }
         .info-box.highlight strong { color: var(--success); }
 
+        /* Styling Item Hasil */
         .result-item {
-            background: #1a1a1a; margin-bottom: 15px; padding: 20px;
+            background: var(--item-bg); margin-bottom: 15px; padding: 20px;
             border-radius: 20px; border-left: 5px solid;
             display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
         .lulus { border-color: var(--success); }
         .tidak-lulus { border-color: var(--red); }
@@ -126,7 +130,13 @@
         .lulus .status-badge { background: var(--success); color: black; }
         .tidak-lulus .status-badge { background: var(--red); color: white; }
 
+        /* Khusus Mode Terang: Mempertegas Tulisan */
+        body.light-mode .result-item { border-bottom: 1px solid #ddd; }
+        body.light-mode .info-box strong { color: #007bff; }
+        body.light-mode .info-box.highlight strong { color: #28a745; }
+
         @media (max-width: 600px) {
+            .header-container { flex-direction: column; text-align: center; }
             .info-grid { grid-template-columns: 1fr; }
             .result-item { flex-direction: column; align-items: flex-start; gap: 10px; }
         }
@@ -141,12 +151,14 @@
 
         <div class="header-container">
             <h1>🏆 Hasil Seleksi PPI</h1>
-            
-            <div class="dropdown">
-                <button class="dropbtn" onclick="toggleBackMenu()">KEMBALI ▾</button>
-                <div id="backDropdown" class="dropdown-content">
-                    <a href="index.html">Beranda (Home)</a>
-                    <a href="urut.html">Urutan Peserta</a>
+            <div class="btn-group">
+                <button class="theme-toggle" onclick="toggleDarkMode()" id="themeBtn">🌙</button>
+                <div class="dropdown">
+                    <button class="dropbtn" onclick="toggleBackMenu()">KEMBALI ▾</button>
+                    <div id="backDropdown" class="dropdown-content">
+                        <a href="index.html">Beranda (Home)</a>
+                        <a href="urut.html">Urutan Peserta</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -172,6 +184,23 @@
     </div>
 
 <script>
+    // --- LOGIKA THEME (DARK/LIGHT) ---
+    function toggleDarkMode() {
+        const body = document.body;
+        const btn = document.getElementById('themeBtn');
+        body.classList.toggle('light-mode');
+        
+        const isLight = body.classList.contains('light-mode');
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        btn.innerHTML = isLight ? '☀️' : '🌙';
+    }
+
+    // Load preferensi tema
+    if (localStorage.getItem('theme') === 'light') {
+        document.body.classList.add('light-mode');
+        document.getElementById('themeBtn').innerHTML = '☀️';
+    }
+
     // Konfigurasi Firebase
     const FIREBASE_CONFIG = {
         apiKey: "AIzaSyDpPEkKbEt6b_v2OWlBfGuaVQpBg2-RWR4",
@@ -191,12 +220,10 @@
     db.ref('sekolah').on('value', s=>{allSekolah=s.val()||{};render()});
     db.ref('penilaian').on('value', s=>{allPenilaian=s.val()||{};render()});
 
-    // Fungsi Dropdown
     function toggleBackMenu() {
         document.getElementById("backDropdown").classList.toggle("show");
     }
 
-    // Tutup dropdown jika klik di luar
     window.onclick = function(event) {
         if (!event.target.matches('.dropbtn')) {
             const dropdowns = document.getElementsByClassName("dropdown-content");
@@ -216,7 +243,6 @@
         box.innerHTML = '';
 
         const keys = Object.keys(allPeserta).reverse();
-
         let countLulus = 0;
         let countTayang = 0;
 
@@ -232,11 +258,13 @@
                 const sekolah = allSekolah[p.idSekolah]?.namaSekolah || 'N/A';
                 const gender = p.jenisKelamin || '-';
                 
+                // Di sini saya memastikan warna Nama Peserta menggunakan var(--text) 
+                // agar otomatis hitam di light mode dan putih di dark mode
                 const div = document.createElement('div');
                 div.className = 'result-item ' + (d.hasilLulus ? 'lulus' : 'tidak-lulus');
                 div.innerHTML = `
                     <div>
-                        <div style="color:var(--gold); font-weight:700; font-size:1.1em;">
+                        <div style="color:var(--text); font-weight:700; font-size:1.1em;">
                             ${p.nama} <span style="color:var(--text-muted); font-size:0.75em; font-weight:400;">(${gender})</span>
                         </div>
                         <div style="font-size:0.8em; color:var(--text-muted); margin-top:4px;">
