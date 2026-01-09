@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PPI Road to Show Goes to School - Hasil Peserta</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <script>
+        // Fitur Keamanan (Anti Inspect Element & Copy)
         document.addEventListener("contextmenu", e => e.preventDefault());
         document.addEventListener("selectstart", e => e.preventDefault());
         document.addEventListener("keydown", e => {
@@ -21,28 +23,34 @@
             --bg-gradient: radial-gradient(circle at center, #333333 0%, #050505 100%);
             --body-bg: #1a1a1a;
             --card-bg: #111111;
-            --item-bg: #1a1a1a;
+            --item-bg: #1e1e1e;
             --gold: #d4af37;
             --blue: #00d2ff;
-            --red: #ff416c;
+            --red: #ff4d4d;
             --success: #00ff88;
             --text: #ffffff;
-            --text-muted: #aaaaaa;
+            --text-muted: #bbbbbb;
             --border-rgba: rgba(212, 175, 55, 0.3);
+            --note-bg: rgba(255, 255, 255, 0.05);
         }
 
-        /* LIGHT MODE OVERRIDE - TEKS HITAM PEKAT */
+        /* OPTIMASI MODE TERANG (KONTRAST TINGGI UNTUK LUAR RUANGAN) */
         body.light-mode {
-            --bg-gradient: radial-gradient(circle at center, #ffffff 0%, #e6e6e6 100%);
-            --body-bg: #f0f2f5;
-            --card-bg: #ffffff;
-            --item-bg: #f9f9f9;
-            --text: #000000; /* Tulisan utama jadi hitam */
-            --text-muted: #444444; /* Abu-abu gelap agar tetap terbaca jelas */
+            --bg-gradient: none;
+            --body-bg: #ffffff; 
+            --card-bg: #f8f9fa;
+            --item-bg: #ffffff;
+            --text: #000000; /* Hitam pekat agar terbaca jelas */
+            --text-muted: #2d2d2d; /* Abu tua pekat */
+            --gold: #856404;
+            --blue: #0056b3; 
+            --red: #bd2130;
+            --success: #1e7e34;
             --border-rgba: rgba(0, 0, 0, 0.15);
+            --note-bg: #e9ecef;
         }
 
-        * { box-sizing: border-box; transition: background 0.3s, color 0.3s; }
+        * { box-sizing: border-box; transition: background 0.2s, color 0.2s; }
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0; background: var(--body-bg); color: var(--text);
@@ -54,110 +62,104 @@
 
         .container {
             width: 95%; max-width: 800px; background: var(--card-bg);
-            border-radius: 40px; border: 2px solid var(--border-rgba);
-            padding: 40px 25px 60px 25px; box-shadow: 0 40px 100px rgba(0,0,0,0.3);
+            border-radius: 30px; border: 2px solid var(--border-rgba);
+            padding: 30px 20px 60px 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
             position: relative; overflow: hidden;
-        }
-
-        .version-block {
-            position: absolute; bottom: 0; left: 0;
-            background: rgba(212, 175, 55, 0.2); color: var(--gold);
-            padding: 5px 15px; font-size: 0.6em; font-weight: 700;
-            letter-spacing: 2px; border-top-right-radius: 15px;
-            border-right: 1px solid var(--border-rgba);
-            border-top: 1px solid var(--border-rgba);
         }
 
         .header-container {
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 30px; border-bottom: 1px solid rgba(150,150,150,0.1);
+            margin-bottom: 25px; border-bottom: 2px solid var(--gold);
             padding-bottom: 15px; gap: 10px;
         }
 
-        h1 { font-size: 1.1em; color: var(--gold); margin: 0; letter-spacing: 2px; text-transform: uppercase; flex-grow: 1; }
+        h1 { font-size: 1em; color: var(--gold); margin: 0; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; }
 
         .btn-group { display: flex; gap: 8px; }
-
-        .theme-toggle {
-            background: rgba(212, 175, 55, 0.1); color: var(--gold);
-            border: 1px solid var(--gold); width: 40px; height: 40px;
-            border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+        .theme-toggle, .dropbtn {
+            background: var(--item-bg); color: var(--gold);
+            border: 2px solid var(--gold); height: 40px;
+            border-radius: 10px; cursor: pointer; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
         }
+        .theme-toggle { width: 40px; }
+        .dropbtn { padding: 0 15px; font-size: 0.8em; }
 
-        .dropdown { position: relative; display: inline-block; }
-        .dropbtn {
-            background: rgba(212, 175, 55, 0.1); color: var(--gold);
-            border: 1px solid var(--gold); padding: 8px 15px; height: 40px;
-            border-radius: 10px; cursor: pointer; font-weight: 600;
-            transition: 0.3s;
-        }
-        .dropbtn:hover { background: var(--gold); color: black; }
-
+        .dropdown { position: relative; }
         .dropdown-content {
             display: none; position: absolute; right: 0;
             background-color: var(--card-bg); min-width: 180px;
-            box-shadow: 0px 8px 25px rgba(0,0,0,0.2);
-            z-index: 100; border: 1px solid var(--gold);
+            box-shadow: 0px 8px 25px rgba(0,0,0,0.4);
+            z-index: 100; border: 2px solid var(--gold);
             border-radius: 12px; margin-top: 8px; overflow: hidden;
         }
         .dropdown-content a {
             color: var(--text); padding: 12px 16px; text-decoration: none;
-            display: block; font-size: 0.85em; transition: 0.2s;
+            display: block; font-size: 0.9em; font-weight: 600;
         }
-        .dropdown-content a:hover { background-color: rgba(212, 175, 55, 0.2); color: var(--gold); }
-        .show { display: block !important; animation: fadeIn 0.3s; }
+        .dropdown-content a:hover { background-color: var(--gold); color: white; }
+        .show { display: block !important; }
 
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
         .info-box {
-            background: rgba(150,150,150,0.05); padding: 15px; border-radius: 15px;
-            border: 1px solid rgba(150,150,150,0.1);
+            background: var(--item-bg); padding: 15px; border-radius: 15px;
+            border: 1px solid var(--border-rgba); text-align: center;
         }
-        .info-box span { display: block; font-size: 0.75em; color: var(--text-muted); text-transform: uppercase; }
-        .info-box strong { font-size: 1.5em; color: var(--blue); }
+        .info-box span { display: block; font-size: 0.7em; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+        .info-box strong { font-size: 1.6em; color: var(--blue); }
         .info-box.highlight strong { color: var(--success); }
 
-        /* Styling Item Hasil */
         .result-item {
             background: var(--item-bg); margin-bottom: 15px; padding: 20px;
-            border-radius: 20px; border-left: 5px solid;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-radius: 20px; border: 1px solid var(--border-rgba);
+            border-left: 10px solid;
+            display: flex; flex-direction: column; gap: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-        .lulus { border-color: var(--success); }
-        .tidak-lulus { border-color: var(--red); }
+        .lulus { border-left-color: var(--success); }
+        .tidak-lulus { border-left-color: var(--red); }
 
-        .status-badge { padding: 5px 15px; border-radius: 8px; font-weight: 700; font-size: 0.8em; }
-        .lulus .status-badge { background: var(--success); color: black; }
-        .tidak-lulus .status-badge { background: var(--red); color: white; }
+        .item-main { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        
+        .name-tag { color: var(--text); font-weight: 700; font-size: 1.15em; line-height: 1.2; }
+        .sub-tag { font-size: 0.85em; color: var(--text-muted); margin-top: 4px; font-weight: 600; }
+        
+        .status-badge { 
+            padding: 8px 15px; border-radius: 10px; font-weight: 800; font-size: 0.8em; 
+            text-transform: uppercase; min-width: 110px; text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .lulus .status-badge { background: var(--success); color: #000; }
+        .tidak-lulus .status-badge { background: var(--red); color: #fff; }
 
-        /* Khusus Mode Terang: Mempertegas Tulisan */
-        body.light-mode .result-item { border-bottom: 1px solid #ddd; }
-        body.light-mode .info-box strong { color: #007bff; }
-        body.light-mode .info-box.highlight strong { color: #28a745; }
+        .note-box {
+            background: var(--note-bg); padding: 12px 15px; border-radius: 12px;
+            font-size: 0.85em; color: var(--text-muted); border-left: 4px solid var(--gold);
+            line-height: 1.4;
+        }
+        .note-label { font-weight: 700; color: var(--gold); text-transform: uppercase; font-size: 0.8em; display: block; margin-bottom: 2px; }
 
         @media (max-width: 600px) {
-            .header-container { flex-direction: column; text-align: center; }
-            .info-grid { grid-template-columns: 1fr; }
-            .result-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .item-main { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .status-badge { width: 100%; padding: 10px; }
+            .container { padding: 20px 15px 50px 15px; }
         }
     </style>
 </head>
 <body>
-
     <div class="bg-glow"></div>
-
     <div class="container">
-        <div class="version-block">V 2.0</div>
+        <div style="position:absolute; bottom:0; left:0; background:var(--gold); color:black; font-size:10px; padding:2px 10px; font-weight:800; border-top-right-radius:10px;">V 2.5 STABLE</div>
 
         <div class="header-container">
             <h1>🏆 Hasil Seleksi PPI</h1>
             <div class="btn-group">
                 <button class="theme-toggle" onclick="toggleDarkMode()" id="themeBtn">🌙</button>
                 <div class="dropdown">
-                    <button class="dropbtn" onclick="toggleBackMenu()">KEMBALI ▾</button>
+                    <button class="dropbtn" onclick="toggleBackMenu()">MENU ▾</button>
                     <div id="backDropdown" class="dropdown-content">
-                        <a href="index.html">Beranda (Home)</a>
-                        <a href="urut.html">Urutan Peserta</a>
+                        <a href="index.html">Halaman Utama</a>
+                        <a href="urut.html">Daftar Peserta</a>
                     </div>
                 </div>
             </div>
@@ -175,115 +177,128 @@
                 </div>
             </div>
 
-            <h2 style="font-size: 1em; color: var(--gold); letter-spacing: 1px; margin-bottom: 20px;">PENGUMUMAN TERBARU</h2>
+            <h2 style="font-size: 0.9em; color: var(--gold); letter-spacing: 1px; margin-bottom: 20px; text-transform: uppercase; border-left: 5px solid var(--gold); padding-left: 12px; font-weight:700;">Pengumuman Hasil Seleksi</h2>
             
             <div id="realtimeResults">
-                <p style="text-align:center; color:var(--text-muted)">Memuat data...</p>
+                <p style="text-align:center; color:var(--text-muted); padding:40px; font-weight:600;">Menghubungkan ke database...</p>
             </div>
         </div>
     </div>
 
-<script>
-    // --- LOGIKA THEME (DARK/LIGHT) ---
-    function toggleDarkMode() {
-        const body = document.body;
-        const btn = document.getElementById('themeBtn');
-        body.classList.toggle('light-mode');
-        
-        const isLight = body.classList.contains('light-mode');
-        localStorage.setItem('theme', isLight ? 'light' : 'dark');
-        btn.innerHTML = isLight ? '☀️' : '🌙';
-    }
+    <script>
+        // --- KONFIGURASI FIREBASE ---
+        const FIREBASE_CONFIG = {
+            apiKey: "AIzaSyDpPEkKbEt6b_v2OWlBfGuaVQpBg2-RWR4",
+            authDomain: "cwu-gen-2.firebaseapp.com",
+            databaseURL: "https://cwu-gen-2-default-rtdb.firebaseio.com",
+            projectId: "cwu-gen-2",
+            storageBucket: "cwu-gen-2.appspot.com",
+            messagingSenderId: "40585612014",
+            appId: "1:40585612014:web:c88141fee3699aca68181ff"
+        };
+        firebase.initializeApp(FIREBASE_CONFIG);
+        const database = firebase.database();
 
-    // Load preferensi tema
-    if (localStorage.getItem('theme') === 'light') {
-        document.body.classList.add('light-mode');
-        document.getElementById('themeBtn').innerHTML = '☀️';
-    }
+        let allSekolah = {}, allPeserta = {}, allPenilaian = {};
 
-    // Konfigurasi Firebase
-    const FIREBASE_CONFIG = {
-        apiKey: "AIzaSyDpPEkKbEt6b_v2OWlBfGuaVQpBg2-RWR4",
-        authDomain: "cwu-gen-2.firebaseapp.com",
-        databaseURL: "https://cwu-gen-2-default-rtdb.firebaseio.com",
-        projectId: "cwu-gen-2",
-        storageBucket: "cwu-gen-2.appspot.com",
-        messagingSenderId: "40585612014",
-        appId: "1:40585612014:web:c88141fee3699aca68181ff"
-    };
-    firebase.initializeApp(FIREBASE_CONFIG);
-    const db = firebase.database();
+        // --- LOAD DATA ---
+        function initializeDataListeners() {
+            database.ref('sekolah').on('value', s => { allSekolah = s.val() || {}; render(); });
+            database.ref('peserta').on('value', s => { allPeserta = s.val() || {}; render(); });
+            database.ref('penilaian').on('value', s => { allPenilaian = s.val() || {}; render(); });
+        }
+        document.addEventListener('DOMContentLoaded', initializeDataListeners);
 
-    let allPeserta={}, allSekolah={}, allPenilaian={};
+        // --- FUNGSI RENDER (LOGIKA FILE 1 + UI FILE 2) ---
+        function render() {
+            const box = document.getElementById('realtimeResults');
+            const lulusCountEl = document.getElementById('lulusCount');
+            const tayangCountEl = document.getElementById('tayangCount');
+            if (!box) return;
 
-    db.ref('peserta').on('value', s=>{allPeserta=s.val()||{};render()});
-    db.ref('sekolah').on('value', s=>{allSekolah=s.val()||{};render()});
-    db.ref('penilaian').on('value', s=>{allPenilaian=s.val()||{};render()});
+            box.innerHTML = '';
+            let totalLulus = 0, totalTayang = 0;
 
-    function toggleBackMenu() {
-        document.getElementById("backDropdown").classList.toggle("show");
-    }
+            // Sorting Berdasarkan Kode Peserta (Logika File 1)
+            const sortedKeys = Object.keys(allPenilaian).sort((a, b) => {
+                const pA = allPeserta[allPenilaian[a].idPeserta];
+                const pB = allPeserta[allPenilaian[b].idPeserta];
+                return (pA?.kodePeserta || "").localeCompare(pB?.kodePeserta || "");
+            });
 
-    window.onclick = function(event) {
-        if (!event.target.matches('.dropbtn')) {
-            const dropdowns = document.getElementsByClassName("dropdown-content");
-            for (let i = 0; i < dropdowns.length; i++) {
-                let openDropdown = dropdowns[i];
-                if (openDropdown.classList.contains('show')) {
-                    openDropdown.classList.remove('show');
+            sortedKeys.forEach(key => {
+                const d = allPenilaian[key];
+                
+                // Hitung total lulus global
+                if (d.hasilLulus === true) totalLulus++;
+
+                // Logika Status Tayang (File 1)
+                if (d.statusTayang === true) {
+                    totalTayang++;
+                    const p = allPeserta[d.idPeserta];
+                    if (p) {
+                        const sekolah = allSekolah[p.idSekolah]?.namaSekolah || 'N/A';
+                        const statusClass = d.hasilLulus ? 'lulus' : 'tidak-lulus';
+                        const statusText = d.hasilLulus ? 'LULUS' : 'TIDAK LULUS';
+                        
+                        // Handle Catatan/Keterangan dengan Label (Permintaan User)
+                        const noteHtml = d.keterangan ? 
+                            `<div class="note-box"><span class="note-label">Catatan Admin:</span>${d.keterangan}</div>` : '';
+
+                        const div = document.createElement('div');
+                        div.className = 'result-item ' + statusClass;
+                        div.innerHTML = `
+                            <div class="item-main">
+                                <div>
+                                    <div class="name-tag">${p.nama} <span style="font-size:0.75em; opacity:0.8; font-weight:400;">(${p.jenisKelamin})</span></div>
+                                    <div class="sub-tag">
+                                        Kode: <b style="color:var(--blue)">${p.kodePeserta}</b> | ${sekolah}
+                                    </div>
+                                </div>
+                                <div class="status-badge">${statusText}</div>
+                            </div>
+                            ${noteHtml}
+                        `;
+                        box.appendChild(div);
+                    }
+                }
+            });
+
+            lulusCountEl.textContent = totalLulus;
+            tayangCountEl.textContent = totalTayang;
+
+            if (totalTayang === 0) {
+                box.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding:40px; font-weight:600;">Belum ada hasil penilaian yang dipublikasikan.</p>';
+            }
+        }
+
+        // --- THEME & DROPDOWN ENGINE ---
+        function toggleDarkMode() {
+            const body = document.body;
+            const btn = document.getElementById('themeBtn');
+            body.classList.toggle('light-mode');
+            const isLight = body.classList.contains('light-mode');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            btn.innerHTML = isLight ? '☀️' : '🌙';
+        }
+
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+            document.getElementById('themeBtn').innerHTML = '☀️';
+        }
+
+        function toggleBackMenu() {
+            document.getElementById("backDropdown").classList.toggle("show");
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.dropbtn')) {
+                const dropdowns = document.getElementsByClassName("dropdown-content");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    if (dropdowns[i].classList.contains('show')) dropdowns[i].classList.remove('show');
                 }
             }
         }
-    }
-
-    function render(){
-        const box = document.getElementById('realtimeResults');
-        const lulusCount = document.getElementById('lulusCount');
-        const tayangCount = document.getElementById('tayangCount');
-        box.innerHTML = '';
-
-        const keys = Object.keys(allPeserta).reverse();
-        let countLulus = 0;
-        let countTayang = 0;
-
-        keys.forEach(idPeserta => {
-            const p = allPeserta[idPeserta];
-            const penKey = Object.keys(allPenilaian).find(k => allPenilaian[k].idPeserta === idPeserta);
-            const d = penKey ? allPenilaian[penKey] : null;
-
-            if (d && d.hasilLulus) countLulus++;
-
-            if (d && d.statusTayang) {
-                countTayang++;
-                const sekolah = allSekolah[p.idSekolah]?.namaSekolah || 'N/A';
-                const gender = p.jenisKelamin || '-';
-                
-                // Di sini saya memastikan warna Nama Peserta menggunakan var(--text) 
-                // agar otomatis hitam di light mode dan putih di dark mode
-                const div = document.createElement('div');
-                div.className = 'result-item ' + (d.hasilLulus ? 'lulus' : 'tidak-lulus');
-                div.innerHTML = `
-                    <div>
-                        <div style="color:var(--text); font-weight:700; font-size:1.1em;">
-                            ${p.nama} <span style="color:var(--text-muted); font-size:0.75em; font-weight:400;">(${gender})</span>
-                        </div>
-                        <div style="font-size:0.8em; color:var(--text-muted); margin-top:4px;">
-                            Kode: <b style="color:var(--blue)">${p.kodePeserta}</b> | ${sekolah}
-                        </div>
-                    </div>
-                    <div class="status-badge">${d.hasilLulus ? 'LULUS' : 'TIDAK LULUS'}</div>
-                `;
-                box.appendChild(div);
-            }
-        });
-
-        lulusCount.textContent = countLulus;
-        tayangCount.textContent = countTayang;
-
-        if(countTayang === 0){
-            box.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:40px;">Belum ada hasil yang ditayangkan.</p>';
-        }
-    }
-</script>
+    </script>
 </body>
 </html>
